@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.12.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace.csproj" />
+    <ProjectReference Include="..\..\UvA.TeamCreator\UvA.TeamCreator.Shared\UvA.TeamCreator.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
