@@ -47,7 +47,7 @@ namespace UvA.TeamsLTI.Web.Controllers
 
             var enc = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return Redirect($"http://localhost:8081/#{enc}");
+            return Redirect($"/#{enc}");
         }
     }
 }

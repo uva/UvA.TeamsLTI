@@ -4,3 +4,6 @@
 *.csproj.user
 node_modules
 .DS_Store
+*/dist/
+*/src/**/*.js
+*/src/**/*.js.map
