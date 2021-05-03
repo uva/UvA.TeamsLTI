@@ -9,10 +9,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using UvA.TeamCreator.Shared;
 using UvA.TeamsLTI.Data;
 using UvA.TeamsLTI.Services;
@@ -79,11 +85,11 @@ namespace UvA.TeamsLTI.Web
                     opt.Scope.Add("openid");
                     opt.Prompt = "none";
                     opt.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    opt.Configuration = new Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectConfiguration
+                    opt.Configuration = new OpenIdConnectConfiguration
                     {
                         AuthorizationEndpoint = config["Endpoint"]
                     };
-                    opt.TokenValidationParameters.IssuerSigningKeys = JsonWebKeySet.Create(new HttpClient().GetStringAsync(config["JwksUrl"]).Result).GetSigningKeys();
+                    opt.ConfigurationManager = new ConfigurationManager { Config = config };
                     opt.TokenValidationParameters.ValidIssuer = config["Authority"];
                 });
 
@@ -94,6 +100,35 @@ namespace UvA.TeamsLTI.Web
 
             services.AddAuthorization();
             services.AddControllers();
+        }
+
+        class ConfigurationManager : IConfigurationManager<OpenIdConnectConfiguration>
+        {
+            public IConfiguration Config;
+            OpenIdConnectConfiguration Current;
+            DateTimeOffset? ExpiresOn;
+
+            public async Task<OpenIdConnectConfiguration> GetConfigurationAsync(CancellationToken cancel)
+            {
+                if (Current == null || ExpiresOn < DateTimeOffset.Now.AddMinutes(5))
+                {
+                    Current = new OpenIdConnectConfiguration
+                    {
+                        AuthorizationEndpoint = Config["Endpoint"]
+                    };
+                    var keySet = JsonWebKeySet.Create(await new HttpClient().GetStringAsync(Config["JwksUrl"]));
+                    if (keySet.Keys.All(k => k.AdditionalData.ContainsKey("exp")))
+                        ExpiresOn = keySet.Keys.Select(k => DateTimeOffset.FromUnixTimeSeconds((long)k.AdditionalData["exp"])).Min();
+                    foreach (var key in keySet.GetSigningKeys())
+                        Current.SigningKeys.Add(key);
+                }
+                return Current;
+            }
+
+            public void RequestRefresh()
+            {
+                Current = null;
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
