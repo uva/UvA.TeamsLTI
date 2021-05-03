@@ -88,7 +88,7 @@ export default class TeamEditor extends Vue {
       this.course.teams.push(this.team);
       this.team.url = 'test';
     }
-    axios.post('/CourseInfo', this.team).then(() => {
+    axios.post(process.env.VUE_APP_ENDPOINT + '/CourseInfo', this.team).then(() => {
       this.isSaving = false;
       this.$emit('close');
     });

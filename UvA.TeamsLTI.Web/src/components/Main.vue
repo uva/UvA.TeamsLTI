@@ -23,7 +23,7 @@ export default class Main extends Vue {
 
   public created(): void {
     axios.defaults.headers.common['Authorization'] = `Bearer ${window.location.hash.substr(1)}`;
-    axios.get('/CourseInfo').then(resp => this.course = resp.data);
+    axios.get(process.env.VUE_APP_ENDPOINT + '/CourseInfo').then(resp => this.course = resp.data);
   }
 
   editTeam(team: Team): void {

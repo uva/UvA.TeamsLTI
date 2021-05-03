@@ -18,7 +18,7 @@ export default class App extends Vue {}
 @use 'variables' as *;
 
 #app, input, button {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Lato, Helvetica, Arial, sans-serif;
   color: #2c3e50;
 }
 

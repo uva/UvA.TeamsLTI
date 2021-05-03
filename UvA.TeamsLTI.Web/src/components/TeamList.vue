@@ -52,7 +52,7 @@ export default class TeamList extends Vue {
 
   sync(): void {
     this.isSyncing = true;
-    axios.post('/CourseInfo/Sync').then(s => this.isSyncing = false);
+    axios.post(process.env.VUE_APP_ENDPOINT + '/CourseInfo/Sync').then(s => this.isSyncing = false);
   }
 }
 </script>
@@ -62,7 +62,7 @@ export default class TeamList extends Vue {
 
   h1 > div {
     font-size: 18px;
-    margin-top: -5px;
+    margin-top: -2px;
     color: #777;
     font-weight: normal;
   }
@@ -81,6 +81,10 @@ export default class TeamList extends Vue {
 
     div {
       font-size: 13px;
+    }
+
+    > div:last-child {
+      margin-top: 2px;
     }
 
     &::before {
