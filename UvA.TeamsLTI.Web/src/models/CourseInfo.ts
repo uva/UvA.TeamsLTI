@@ -18,6 +18,7 @@ export interface Section {
 }
 
 export interface Team {
+    id?: string;
     name: string;
     contexts: Context[];
     channels: Channel[];

@@ -29,17 +29,29 @@ namespace UvA.TeamsLTI.Web.Controllers
 
         public async Task<CourseInfo> Get()
         {
-            var info = await CourseService.GetCourseInfo(CourseId);
-            info.Name = User.FindFirstValue("courseName");
+            var info = await GetCourseInfo();
             var current = await Data.GetCourse(CourseId);
             if (current != null)
                 info = await Data.UpdateCourseInfo(info);
             return info;
         }
 
+        async Task<CourseInfo> GetCourseInfo()
+        {
+            var info = await CourseService.GetCourseInfo(CourseId);
+            info.Name = User.FindFirstValue("courseName");
+            return info;
+        }
+
         [HttpPost]
-        public async Task Post(Team team)
-            => await Data.UpdateTeam(CourseId, team);
+        public async Task<string> Post(Team team)
+        {
+            var current = await Data.GetCourse(CourseId);
+            if (current == null)
+                await Data.UpdateCourseInfo(await GetCourseInfo());
+            await Data.UpdateTeam(CourseId, team);
+            return team.Id;
+        }
 
         [HttpPost]
         [Route("Sync")]
