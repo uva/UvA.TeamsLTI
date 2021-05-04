@@ -37,6 +37,8 @@ namespace UvA.TeamsLTI.Data
             CourseId = courseId;
             Team = team;
 
+            if (team.Contexts[0].Type == ContextType.Course)
+                team.Contexts[0].Id = courseId;
             var res = await UpdateTeam();
             await CheckChannels();
             await UpdateChannels();

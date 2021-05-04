@@ -44,6 +44,7 @@ namespace UvA.TeamsLTI.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = LoginController.Teacher)]
         public async Task<string> Post(Team team)
         {
             var current = await Data.GetCourse(CourseId);
@@ -55,6 +56,7 @@ namespace UvA.TeamsLTI.Web.Controllers
 
         [HttpPost]
         [Route("Sync")]
+        [Authorize(Roles = LoginController.Teacher)]
         public async Task Sync()
         {
             foreach (var team in (await Data.GetCourse(CourseId)).Teams)

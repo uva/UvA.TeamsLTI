@@ -20,6 +20,9 @@ namespace UvA.TeamsLTI.Web.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
+        public const string Student = "Student";
+        public const string Teacher = "Teacher";
+
         string JwtKey;
 
         public LoginController(IConfiguration config)
@@ -34,13 +37,15 @@ namespace UvA.TeamsLTI.Web.Controllers
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var context = JsonDocument.Parse(User.FindFirst("https://purl.imsglobal.org/spec/lti/claim/context").Value).RootElement;
+            var roles = User.FindAll("https://purl.imsglobal.org/spec/lti/claim/roles").Select(c => c.Value);
 
             var token = new JwtSecurityToken("lti",
               "lti",
               new[]
               {
                   new Claim("courseId", context.GetProperty("id").GetString()),
-                  new Claim("courseName", context.GetProperty("title").GetString())
+                  new Claim("courseName", context.GetProperty("title").GetString()),
+                  new Claim(ClaimTypes.Role, roles.Any(e => e.Contains("Instructor")) ? Teacher : Student)
               },
               expires: DateTime.Now.AddMinutes(120),
               signingCredentials: credentials);
