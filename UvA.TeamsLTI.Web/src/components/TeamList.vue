@@ -9,13 +9,15 @@
     <div v-if="course.teams.length > 0">
       The following team{{ course.teams.length > 1 ? "s have" : " has" }} been created:
       <div class="team-block" v-for="team in course.teams" :key="team.id">
-        <a class="edit-link" href="#" @click.prevent="$emit('edit', team)">Edit</a>
+        <a class="edit-link" href="#" v-if="canEdit" @click.prevent="$emit('edit', team)">Edit</a>
         <a :href="team.url">{{ team.name }}</a>
         <div v-if="team.contexts[0].type == ContextType.Course">Entire course</div>
         <div v-if="team.contexts[0].type == ContextType.Section">{{ team.contexts.length }} section{{ team.contexts.length == 1 ? "": "s" }}</div>
       </div>
     </div>
-    <button @click="newTeam">New team</button> <button v-if="course.teams.length > 0" @click="sync">Sync members</button>
+    <div v-if="canEdit">
+      <button @click="newTeam">New team</button> <button v-if="course.teams.length > 0" @click="sync">Sync members</button>
+    </div>
   </div>
   <LoadingScreen text="Synchronizing" v-if="isSyncing" />
 </template>
@@ -28,7 +30,8 @@ import axios from 'axios';
 
 @Options({
   props: {
-    course: Object
+    course: Object,
+    canEdit: Boolean
   },
   components: { LoadingScreen }
 })
@@ -36,6 +39,7 @@ export default class TeamList extends Vue {
   course!: CourseInfo;
   ContextType = ContextType;
   isSyncing = false;
+  canEdit = false;
 
   newTeam(): void {
       const team: Team = {

@@ -3,7 +3,7 @@
     <h1>Microsoft Teams</h1>
     Retrieving data...
   </div>
-  <TeamList v-if="course && !selected" :course="course" @edit="editTeam" />
+  <TeamList v-if="course && !selected" :course="course" @edit="editTeam" :canEdit="canEdit" />
   <TeamEditor :course="course" :team="selected" v-if="selected" @close="selected = null" />
 </template>
 
@@ -13,6 +13,7 @@ import { CourseInfo, Team } from '@/models/CourseInfo';
 import TeamList from './TeamList.vue';
 import TeamEditor from './TeamEditor.vue';
 import axios from 'axios';
+import jwt_decode from 'jwt-decode';
 
 @Options({
   components: { TeamList, TeamEditor }
@@ -20,9 +21,14 @@ import axios from 'axios';
 export default class Main extends Vue {
   course: CourseInfo | null = null;
   selected: Team | null = null;
+  canEdit = false;
 
   public created(): void {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${window.location.hash.substr(1)}`;
+    const token = window.location.hash.substr(1);
+    const jwt = jwt_decode<{ [claim: string]: string }>(token);
+    this.canEdit = jwt["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] == "Teacher";
+
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     axios.get(process.env.VUE_APP_ENDPOINT + '/CourseInfo').then(resp => this.course = resp.data);
   }
 
