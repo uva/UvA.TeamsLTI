@@ -27,7 +27,7 @@ namespace UvA.TeamsLTI.Services
             var crs = GetCourse(courseId);
             return new CourseInfo
             {
-                Id = courseId,
+                CourseId = courseId,
                 Sections = (await crs.GetSections()).Select(s => new Section
                 {
                     Name = s.Name,
@@ -38,8 +38,7 @@ namespace UvA.TeamsLTI.Services
                     Name = c.Name,
                     Id = c.GroupCategoryId,
                     GroupCount = c.GroupIds.Length
-                }).ToArray(), 
-                Teams = new Team[0]
+                }).ToArray()
             };
         }
 

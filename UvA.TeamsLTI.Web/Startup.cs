@@ -16,6 +16,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,8 +54,7 @@ namespace UvA.TeamsLTI.Web
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
 
-            var config = Config.GetSection("Brightspace");
-            services.AddAuthentication(opt =>
+            var auth = services.AddAuthentication(opt =>
                 {
                     opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                     opt.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -74,8 +74,10 @@ namespace UvA.TeamsLTI.Web
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };
-                })
-                .AddOpenIdConnect(opt =>
+                });
+            foreach (var config in Config.GetSection("Environments").GetChildren())
+            {
+                auth.AddOpenIdConnect(config.Key, opt =>
                 {
                     opt.Authority = config["Authority"] + "/";
                     opt.ClientId = config["ClientId"];
@@ -84,6 +86,7 @@ namespace UvA.TeamsLTI.Web
                     opt.Scope.Clear();
                     opt.Scope.Add("openid");
                     opt.Prompt = "none";
+                    opt.SkipUnrecognizedRequests = true;
                     opt.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     opt.Configuration = new OpenIdConnectConfiguration
                     {
@@ -92,8 +95,16 @@ namespace UvA.TeamsLTI.Web
                     opt.ConfigurationManager = new ConfigurationManager { Config = config };
                     opt.TokenValidationParameters.ValidIssuer = config["Authority"];
                 });
+            }
 
-            services.AddTransient<ICourseService, BrightspaceService>();
+            services.AddHttpContextAccessor();
+            services.AddTransient<ICourseService>(sp =>
+            {
+                var acc = sp.GetRequiredService<IHttpContextAccessor>();
+                var env = acc.HttpContext.User.FindFirstValue("environment");
+                var config = sp.GetRequiredService<IConfiguration>();
+                return env.Contains("canvas") ? new CanvasService(config) : new BrightspaceService(config);
+            });
             services.AddTransient<TeamsData>();
             services.AddTransient<TeamsConnector>();
             services.AddTransient<TeamSynchronizer>();

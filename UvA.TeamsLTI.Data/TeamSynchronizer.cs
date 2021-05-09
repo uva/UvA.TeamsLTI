@@ -29,11 +29,13 @@ namespace UvA.TeamsLTI.Data
             Logger = log;
         }
 
+        string Environment;
         int CourseId;
         Team Team;
 
-        public async Task Process(int courseId, Team team)
+        public async Task Process(string env, int courseId, Team team)
         {
+            Environment = env;
             CourseId = courseId;
             Team = team;
 
@@ -56,7 +58,7 @@ namespace UvA.TeamsLTI.Data
                     Team.AllowChannels, Team.AllowPrivateChannels, new[] { OwnerId }, new string[0]);
                 Team.GroupId = res.Id;
                 Team.Url = res.WebUrl;
-                await Data.UpdateTeam(CourseId, Team);
+                await Data.UpdateTeam(Environment, CourseId, Team);
             }
             else
             {
@@ -100,7 +102,7 @@ namespace UvA.TeamsLTI.Data
             foreach (var channel in Team.Channels.Where(c => c.Id == null).ToArray())
             {
                 channel.Id = await Connector.CreatePrivateChannel(Team.GroupId, channel.Name, new[] { OwnerId }, new string[0]);
-                await Data.UpdateChannels(CourseId, Team);
+                await Data.UpdateChannels(Environment, CourseId, Team);
             }
         }
 
@@ -120,7 +122,7 @@ namespace UvA.TeamsLTI.Data
                 }
             }
             if (addedUsers.Any())
-                await Data.UpdateUsers(CourseId, Team);
+                await Data.UpdateUsers(Environment, CourseId, Team);
 
             var deletedUsers = Team.Users.Where(i => !users.Any(u => u.Id.ToString() == i.Key)).ToArray();
             foreach (var user in deletedUsers)
@@ -129,7 +131,7 @@ namespace UvA.TeamsLTI.Data
                 Team.Users.Remove(user.Key);
             }
             if (deletedUsers.Any())
-                await Data.UpdateUsers(CourseId, Team);
+                await Data.UpdateUsers(Environment, CourseId, Team);
         }
 
         async Task UpdateChannelMembers(Channel channel)
@@ -144,7 +146,7 @@ namespace UvA.TeamsLTI.Data
                     channel.Users.Add(user.Id.ToString(), memId);
             }
             if (addedUsers.Any())
-                await Data.UpdateChannels(CourseId, Team);
+                await Data.UpdateChannels(Environment, CourseId, Team);
 
             var deletedUsers = channel.Users.Where(i => !users.Any(u => u.Id.ToString() == i.Key)).ToArray();
             foreach (var user in deletedUsers)
@@ -153,7 +155,7 @@ namespace UvA.TeamsLTI.Data
                 channel.Users.Remove(user.Key);
             }
             if (deletedUsers.Any())
-                await Data.UpdateUsers(CourseId, Team);
+                await Data.UpdateUsers(Environment, CourseId, Team);
         }
     }
 }

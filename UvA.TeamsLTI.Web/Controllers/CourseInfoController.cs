@@ -18,6 +18,8 @@ namespace UvA.TeamsLTI.Web.Controllers
         TeamsData Data;
         TeamSynchronizer Synchronizer;
 
+        string Environment => User.FindFirstValue("environment");
+
         public CourseInfoController(ICourseService cs, TeamsData data, TeamSynchronizer sync)
         {
             CourseService = cs;
@@ -30,7 +32,7 @@ namespace UvA.TeamsLTI.Web.Controllers
         public async Task<CourseInfo> Get()
         {
             var info = await GetCourseInfo();
-            var current = await Data.GetCourse(CourseId);
+            var current = await Data.GetCourse(Environment, CourseId);
             if (current != null)
                 info = await Data.UpdateCourseInfo(info);
             return info;
@@ -40,6 +42,7 @@ namespace UvA.TeamsLTI.Web.Controllers
         {
             var info = await CourseService.GetCourseInfo(CourseId);
             info.Name = User.FindFirstValue("courseName");
+            info.Environment = Environment;
             return info;
         }
 
@@ -47,10 +50,10 @@ namespace UvA.TeamsLTI.Web.Controllers
         [Authorize(Roles = LoginController.Teacher)]
         public async Task<string> Post(Team team)
         {
-            var current = await Data.GetCourse(CourseId);
+            var current = await Data.GetCourse(Environment, CourseId);
             if (current == null)
                 await Data.UpdateCourseInfo(await GetCourseInfo());
-            await Data.UpdateTeam(CourseId, team);
+            await Data.UpdateTeam(Environment, CourseId, team);
             return team.Id;
         }
 
@@ -59,8 +62,8 @@ namespace UvA.TeamsLTI.Web.Controllers
         [Authorize(Roles = LoginController.Teacher)]
         public async Task Sync()
         {
-            foreach (var team in (await Data.GetCourse(CourseId)).Teams)
-                await Synchronizer.Process(CourseId, team);
+            foreach (var team in (await Data.GetCourse(Environment, CourseId)).Teams)
+                await Synchronizer.Process(Environment, CourseId, team);
         }
     }
 }

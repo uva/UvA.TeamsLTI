@@ -39,13 +39,18 @@ namespace UvA.TeamsLTI.Web.Controllers
             var context = JsonDocument.Parse(User.FindFirst("https://purl.imsglobal.org/spec/lti/claim/context").Value).RootElement;
             var roles = User.FindAll("https://purl.imsglobal.org/spec/lti/claim/roles").Select(c => c.Value);
 
+            var courseId = context.GetProperty("id").GetString();
+            if (!int.TryParse(courseId, out _))
+                courseId = CustomClaim.GetProperty("courseid").ToString();
+
             var token = new JwtSecurityToken("lti",
               "lti",
               new[]
               {
-                  new Claim("courseId", context.GetProperty("id").GetString()),
+                  new Claim("courseId", courseId),
                   new Claim("courseName", context.GetProperty("title").GetString()),
-                  new Claim(ClaimTypes.Role, roles.Any(e => e.Contains("Instructor")) ? Teacher : Student)
+                  new Claim(ClaimTypes.Role, roles.Any(e => e.Contains("Instructor")) ? Teacher : Student),
+                  new Claim("environment", User.Claims.First().Issuer)
               },
               expires: DateTime.Now.AddMinutes(120),
               signingCredentials: credentials);
@@ -54,5 +59,7 @@ namespace UvA.TeamsLTI.Web.Controllers
 
             return Redirect($"/#{enc}");
         }
+
+        JsonElement CustomClaim => JsonDocument.Parse(User.FindFirst("https://purl.imsglobal.org/spec/lti/claim/custom").Value).RootElement;
     }
 }

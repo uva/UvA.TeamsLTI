@@ -1,19 +1,21 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace UvA.TeamsLTI.Data.Models
 {
     public class CourseInfo
     {
-        public int Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
+
+        public int CourseId { get; set; }
         public string Name { get; set; }
+        public string Environment { get; set; }
         public Section[] Sections { get; set; }
         public GroupSet[] GroupSets { get; set; }
-        public Team[] Teams { get; set; }
+        public Team[] Teams { get; set; } = Array.Empty<Team>();
     }
 
     public class GroupSet
