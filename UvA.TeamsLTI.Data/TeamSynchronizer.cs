@@ -1,11 +1,9 @@
 ﻿using DnsClient.Internal;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using UvA.TeamCreator.Shared;
+using UvA.Connectors.Teams;
 using UvA.TeamsLTI.Data.Models;
 using UvA.TeamsLTI.Services;
 using Graph = Microsoft.Graph;
@@ -14,16 +12,14 @@ namespace UvA.TeamsLTI.Data
 {
     public class TeamSynchronizer
     {
-        TeamsConnector Connector;
         TeamsData Data;
         ICourseService CourseService;
         ILogger<TeamSynchronizer> Logger;
+        IConfiguration Config;
 
-        string OwnerId = "42f1fca5-78c4-41ad-b8ff-a1c4007e0840";
-
-        public TeamSynchronizer(TeamsConnector connector, TeamsData data, ICourseService courseService, ILogger<TeamSynchronizer> log)
+        public TeamSynchronizer(IConfiguration config, TeamsData data, ICourseService courseService, ILogger<TeamSynchronizer> log)
         {
-            Connector = connector;
+            Config = config;
             Data = data;
             CourseService = courseService;
             Logger = log;
@@ -33,11 +29,19 @@ namespace UvA.TeamsLTI.Data
         int CourseId;
         Team Team;
 
+        TeamsConnector Connector;
+        string OwnerId, NicknamePrefix;
+
         public async Task Process(string env, int courseId, Team team)
         {
             Environment = env;
             CourseId = courseId;
             Team = team;
+
+            var envSection = Config.GetSection("Environments").GetChildren().First(c => c["Authority"] == env);
+            Connector = new TeamsConnector(Logger, Config.GetSection("Teams").GetSection(envSection["Teams"]));
+            OwnerId = envSection["OwnerId"];
+            NicknamePrefix = envSection["NicknamePrefix"];
 
             if (team.Contexts[0].Type == ContextType.Course)
                 team.Contexts[0].Id = courseId;
@@ -54,7 +58,7 @@ namespace UvA.TeamsLTI.Data
             Graph.Team res;
             if (Team.GroupId == null)
             {
-                res = await Connector.CreateTeam(Team.Name, $"bsp-{Team.Contexts.First().Type.ToString().ToLower()}-{Team.Contexts.First().Id}",
+                res = await Connector.CreateTeam(Team.Name, $"{NicknamePrefix}-{Team.Contexts.First().Type.ToString().ToLower()}-{Team.Contexts.First().Id}",
                     Team.AllowChannels, Team.AllowPrivateChannels, new[] { OwnerId }, new string[0]);
                 Team.GroupId = res.Id;
                 Team.Url = res.WebUrl;

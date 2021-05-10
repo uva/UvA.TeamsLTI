@@ -9,11 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Authen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.Connectors.Brightspace", "..\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace.csproj", "{0193E554-213E-4858-80E3-A4ED684FA992}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UvA.TeamsLTI.Data", "UvA.TeamsLTI.Data\UvA.TeamsLTI.Data.csproj", "{ADFE3A43-584E-4694-BAE1-FFC944F770C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.TeamsLTI.Data", "UvA.TeamsLTI.Data\UvA.TeamsLTI.Data.csproj", "{ADFE3A43-584E-4694-BAE1-FFC944F770C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.TeamCreator.Shared", "..\UvA.TeamCreator\UvA.TeamCreator.Shared\UvA.TeamCreator.Shared.csproj", "{4E104897-22E5-467F-9DB5-21CC599CB26B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.TeamsLTI.TestTool", "UvA.TeamsLTI.TestTool\UvA.TeamsLTI.TestTool.csproj", "{3E41341D-3280-4CD8-9ECE-B5900B6031DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UvA.TeamsLTI.TestTool", "UvA.TeamsLTI.TestTool\UvA.TeamsLTI.TestTool.csproj", "{3E41341D-3280-4CD8-9ECE-B5900B6031DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.Connectors.Teams", "..\UvA.Connectors.Teams\UvA.Connectors.Teams\UvA.Connectors.Teams.csproj", "{423A9587-8161-486A-B34B-A6F67C90AC9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +37,14 @@ Global
 		{ADFE3A43-584E-4694-BAE1-FFC944F770C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADFE3A43-584E-4694-BAE1-FFC944F770C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADFE3A43-584E-4694-BAE1-FFC944F770C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4E104897-22E5-467F-9DB5-21CC599CB26B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4E104897-22E5-467F-9DB5-21CC599CB26B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4E104897-22E5-467F-9DB5-21CC599CB26B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4E104897-22E5-467F-9DB5-21CC599CB26B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E41341D-3280-4CD8-9ECE-B5900B6031DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E41341D-3280-4CD8-9ECE-B5900B6031DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E41341D-3280-4CD8-9ECE-B5900B6031DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E41341D-3280-4CD8-9ECE-B5900B6031DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{423A9587-8161-486A-B34B-A6F67C90AC9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{423A9587-8161-486A-B34B-A6F67C90AC9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{423A9587-8161-486A-B34B-A6F67C90AC9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{423A9587-8161-486A-B34B-A6F67C90AC9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

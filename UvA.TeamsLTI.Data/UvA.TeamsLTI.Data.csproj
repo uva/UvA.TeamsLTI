@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace.csproj" />
-    <ProjectReference Include="..\..\UvA.TeamCreator\UvA.TeamCreator.Shared\UvA.TeamCreator.Shared.csproj" />
+    <ProjectReference Include="..\..\UvA.Connectors.Teams\UvA.Connectors.Teams\UvA.Connectors.Teams.csproj" />
   </ItemGroup>
 
 </Project>

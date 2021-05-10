@@ -20,7 +20,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using UvA.TeamCreator.Shared;
 using UvA.TeamsLTI.Data;
 using UvA.TeamsLTI.Services;
 
@@ -106,7 +105,6 @@ namespace UvA.TeamsLTI.Web
                 return env.Contains("canvas") ? new CanvasService(config) : new BrightspaceService(config);
             });
             services.AddTransient<TeamsData>();
-            services.AddTransient<TeamsConnector>();
             services.AddTransient<TeamSynchronizer>();
 
             services.AddAuthorization();

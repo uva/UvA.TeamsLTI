@@ -28,6 +28,7 @@ namespace UvA.TeamsLTI.Data
             else
             {
                 info.Teams = existing.Teams;
+                info.Id = existing.Id;
                 await Courses.ReplaceOneAsync(i => i.CourseId == info.CourseId && i.Environment == info.Environment, info);
                 return info;
             }
