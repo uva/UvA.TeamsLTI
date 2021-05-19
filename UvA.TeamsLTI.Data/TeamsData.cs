@@ -1,6 +1,8 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.Extensions.Configuration;
+using MongoDB.Driver;
 using System;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using UvA.TeamsLTI.Data.Models;
 
@@ -11,9 +13,11 @@ namespace UvA.TeamsLTI.Data
         IMongoDatabase Database;
         public IMongoCollection<CourseInfo> Courses;
 
-        public TeamsData()
+        public TeamsData(IConfiguration config)
         {
-            Database = new MongoClient().GetDatabase("teams");
+            MongoClientSettings settings = MongoClientSettings.FromUrl(new MongoUrl(config["ConnectionString"]));
+            settings.SslSettings = new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
+            Database = new MongoClient(settings).GetDatabase("teams");
             Courses = Database.GetCollection<CourseInfo>("Courses");
         }
 

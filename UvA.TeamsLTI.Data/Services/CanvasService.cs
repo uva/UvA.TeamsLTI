@@ -16,7 +16,7 @@ namespace UvA.TeamsLTI.Services
 
         public CanvasService(IConfiguration config)
         {
-            var sec = config.GetSection("Canvas-API");
+            var sec = config.GetSection("CanvasAPI");
             Connector = new Cv.CanvasApiConnector(sec["Host"], sec["Token"]);
         }
 

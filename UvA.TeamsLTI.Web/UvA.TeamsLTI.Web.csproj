@@ -16,4 +16,9 @@
     <ProjectReference Include="\aspnetcore\src\Security\Authentication\OpenIdConnect\src\Microsoft.AspNetCore.Authentication.OpenIdConnect.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="dist\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
