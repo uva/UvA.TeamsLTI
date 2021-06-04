@@ -46,7 +46,14 @@ namespace UvA.TeamsLTI.Services
             => (await (await GetCourse(courseId).GetGroupCategories()).First(c => c.GroupCategoryId == groupSetId).GetGroups())
                 .Select(g => new GroupInfo { Id = g.GroupId, Name = g.Name });
 
-        static readonly int[] RoleIds = new[] { 109, 110 };
+        static readonly int[] RoleIds = new[] 
+        {
+            109, // designing lecturer 
+            110, // student
+            124, // lecturer plus
+            125, // lecturer
+            126, // supporting lecturer
+        };
 
         public async Task<IEnumerable<UserInfo>> GetUsers(int courseId, Context context)
         {
