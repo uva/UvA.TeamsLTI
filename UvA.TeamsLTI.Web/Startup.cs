@@ -41,7 +41,7 @@ namespace UvA.TeamsLTI.Web
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", builder => builder
-                    .WithOrigins("http://localhost:8081")
+                    .WithOrigins("http://localhost:8080")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials());
@@ -85,6 +85,7 @@ namespace UvA.TeamsLTI.Web
                     opt.Scope.Clear();
                     opt.Scope.Add("openid");
                     opt.Prompt = "none";
+                    opt.InitiationPath = new PathString("/oidc");
                     opt.SkipUnrecognizedRequests = true;
                     opt.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     opt.Configuration = new OpenIdConnectConfiguration

@@ -26,9 +26,17 @@ namespace UvA.TeamsLTI.Data.Models
         public bool AllowPrivateChannels { get; set; }
         public bool CreateSectionChannels { get; set; }
         public int[] GroupSetIds { get; set; }
+        public Event DeleteEvent { get; set; }
+        public Event CreateEvent { get; set; }
 
         [JsonIgnore]
         public Dictionary<string, string> Users { get; set; } = new Dictionary<string, string>();
+    }
+
+    public class Event
+    {
+        public DateTime Date { get; set; }
+        public string User { get; set; }
     }
 
     public class Channel

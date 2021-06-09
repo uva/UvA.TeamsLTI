@@ -43,6 +43,12 @@ namespace UvA.TeamsLTI.Data
             OwnerId = envSection["OwnerId"];
             NicknamePrefix = envSection["NicknamePrefix"];
 
+            if (team.DeleteEvent != null)
+            {
+                await Connector.DeleteGroup(team.GroupId);
+                return;
+            }
+
             if (team.Contexts[0].Type == ContextType.Course)
                 team.Contexts[0].Id = courseId;
             var res = await UpdateTeam();

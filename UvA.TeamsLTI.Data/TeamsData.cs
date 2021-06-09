@@ -53,6 +53,9 @@ namespace UvA.TeamsLTI.Data
                 existing.Name = team.Name;
                 existing.GroupSetIds = team.GroupSetIds;
                 existing.CreateSectionChannels = team.CreateSectionChannels;
+                existing.DeleteEvent = team.DeleteEvent;
+                if (existing.CreateEvent == null)
+                    existing.CreateEvent = team.CreateEvent;
                 if (team.GroupId != null)
                 {
                     existing.GroupId = team.GroupId;
