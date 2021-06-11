@@ -4,7 +4,7 @@
     Retrieving data...
   </div>
   <TeamList v-if="course && !selected" :course="course" @edit="editTeam" :canEdit="canEdit" />
-  <TeamEditor :course="course" :team="selected" v-if="selected" @close="selected = null" />
+  <TeamEditor :course="course" :team="selected" v-if="selected" @delete="deleteSelected" @close="selected = null" />
 </template>
 
 <script lang="ts">
@@ -30,6 +30,11 @@ export default class Main extends Vue {
 
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     axios.get(process.env.VUE_APP_ENDPOINT + '/CourseInfo').then(resp => this.course = resp.data);
+  }
+
+  deleteSelected(): void {
+    this.course!.teams = this.course!.teams.filter(t => t != this.selected);
+    this.selected = null;
   }
 
   editTeam(team: Team): void {

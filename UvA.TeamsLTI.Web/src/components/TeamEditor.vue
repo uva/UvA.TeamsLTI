@@ -29,16 +29,19 @@
     <label><input type="checkbox" v-model="team.allowChannels" /> Allow users to create channels </label>
     <label><input type="checkbox" v-model="team.allowPrivateChannels" /> Allow users to create private channels </label>
 
-    <button @click="save" :disabled="(team.contexts[0].type == ContextType.Section && sections.filter(s => s.checked).length == 0) || team.name.trim().length < 2">{{ team.url ? "Update team" : "Create team" }}</button>
+    <button @click="save" :disabled="(team.contexts[0].type == ContextType.Section && sections.filter(s => s.checked).length == 0) || team.name.trim().length < 2">{{ team.url ? "Update" : "Create team" }}</button>
     <button @click="$emit('close')" class="button-secondary">Cancel</button>
+    <button @click="isDeleting = true" v-if="team.url" class="button-secondary">Delete team</button>
   </div>
   <LoadingScreen v-if="isSaving" />
+  <ConfirmDialog v-if="isDeleting" @confirm="deleteTeam" @close="isDeleting = false" />
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import { ContextType, CourseInfo, Section, Team } from '@/models/CourseInfo';
 import LoadingScreen from './LoadingScreen.vue';
+import ConfirmDialog from './ConfirmDialog.vue';
 import GroupSetWrapper from '@/models/GroupSetWrapper';
 import SectionWrapper from '@/models/SectionWrapper';
 import axios from 'axios';
@@ -48,7 +51,7 @@ import axios from 'axios';
     course: Object,
     team: Object
   },
-  components: { LoadingScreen }
+  components: { LoadingScreen, ConfirmDialog }
 })
 export default class TeamEditor extends Vue {
   team!: Team;
@@ -59,6 +62,7 @@ export default class TeamEditor extends Vue {
   groupSets!: GroupSetWrapper[];
 
   isSaving = false;
+  isDeleting = false;
 
   created(): void {
     this.sections = this.course.sections.map(s => new SectionWrapper(this.team, s));
@@ -93,6 +97,12 @@ export default class TeamEditor extends Vue {
       this.team.id = res.data;
       this.$emit('close');
     });
+  }
+
+  deleteTeam(): void {
+    axios.delete(process.env.VUE_APP_ENDPOINT + '/CourseInfo/' + this.team.id).then(res => {
+      this.$emit('delete');
+    })
   }
 
   get selectedSections(): Section[] {

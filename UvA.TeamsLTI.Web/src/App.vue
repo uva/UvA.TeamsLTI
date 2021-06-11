@@ -50,6 +50,14 @@ button.button-secondary {
   }
 }
 
+button.button-danger {
+  background: $danger-color;
+
+  &:hover:not(:disabled) {
+    background: $danger-hover-color;
+  }
+}
+
 input[type='text'] {
   padding: 7px 10px;
   width: 250px;
