@@ -102,7 +102,7 @@ namespace UvA.TeamsLTI.Web
             {
                 var acc = sp.GetRequiredService<IHttpContextAccessor>();
                 var env = acc.HttpContext.User.FindFirstValue("environment");
-                var config = sp.GetRequiredService<IConfiguration>();
+                var config = sp.GetRequiredService<IConfiguration>().GetSection("Environments").GetChildren().First(c => c["Authority"] == env);
                 return env.Contains("canvas") ? new CanvasService(config) : new BrightspaceService(config);
             });
             services.AddTransient<TeamsData>();

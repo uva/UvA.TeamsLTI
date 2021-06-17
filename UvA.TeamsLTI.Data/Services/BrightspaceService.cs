@@ -15,8 +15,7 @@ namespace UvA.TeamsLTI.Services
 
         public BrightspaceService(IConfiguration config)
         {
-            var sec = config.GetSection("BrightspaceAPI");
-            Connector = new BrightspaceConnector(sec["Host"], sec["AppId"], sec["AppKey"], sec["UserId"], sec["UserKey"]);
+            Connector = new BrightspaceConnector(config["Host"], config["AppId"], config["AppKey"], config["UserId"], config["UserKey"]);
         }
 
         Dictionary<int, Bsp.Course> Courses = new Dictionary<int, Bsp.Course>();
