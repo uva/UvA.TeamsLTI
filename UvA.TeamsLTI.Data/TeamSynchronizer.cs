@@ -28,6 +28,7 @@ namespace UvA.TeamsLTI.Data
         string Environment;
         int CourseId;
         Team Team;
+        CourseInfo Course;
 
         TeamsConnector Connector;
         string OwnerId, NicknamePrefix;
@@ -91,10 +92,10 @@ namespace UvA.TeamsLTI.Data
                     Team.Channels = Team.Channels.Append(new Channel { Name = name, Contexts = new[] { new Context { Type = type, Id = id, GroupSetId = groupSetId } } }).ToArray();
             }
 
-            var course = await CourseService.GetCourseInfo(CourseId);
+            Course = await CourseService.GetCourseInfo(CourseId);
             if (Team.CreateSectionChannels)
             {
-                var sections = course.Sections.Where(s => Team.Contexts.Any(c => c.Type == ContextType.Course || c.Id == s.Id));
+                var sections = Course.Sections.Where(s => Team.Contexts.Any(c => c.Type == ContextType.Course || c.Id == s.Id));
                 foreach (var sec in sections)
                     checkChannel(ContextType.Section, sec.Id, sec.Name);
             }
@@ -111,6 +112,8 @@ namespace UvA.TeamsLTI.Data
         {
             foreach (var channel in Team.Channels.Where(c => c.Id == null).ToArray())
             {
+                if (Team.Channels.Any(c => c.Name == channel.Name && c.Id != null))
+                    channel.Name += channel.Contexts.Any(c => c.GroupSetId != null) ? $" ({Course.GroupSets.First(s => s.Id == channel.Contexts.First().GroupSetId).Name})" : " (1)";
                 channel.Id = await Connector.CreatePrivateChannel(Team.GroupId, channel.Name, new[] { OwnerId }, new string[0]);
                 await Data.UpdateChannels(Environment, CourseId, Team);
             }
