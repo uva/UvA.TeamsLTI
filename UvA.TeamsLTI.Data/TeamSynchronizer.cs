@@ -1,7 +1,9 @@
 ﻿using DnsClient.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UvA.Connectors.Teams;
 using UvA.TeamsLTI.Data.Models;
@@ -47,14 +49,18 @@ namespace UvA.TeamsLTI.Data
             if (team.DeleteEvent != null)
             {
                 await Connector.DeleteGroup(team.GroupId);
+                team.DeleteEvent.DateExecuted = DateTime.Now;
+                await Data.UpdateTeam(Environment, CourseId, team);
                 return;
             }
+            Course = await CourseService.GetCourseInfo(CourseId);
 
             if (team.Contexts[0].Type == ContextType.Course)
                 team.Contexts[0].Id = courseId;
             var res = await UpdateTeam();
             await CheckChannels();
-            await UpdateChannels();
+            if (await UpdateChannels())
+                await Task.Delay(TimeSpan.FromSeconds(30)); // need to wait before adding users to new channels
             await UpdateUsers();
             foreach (var channel in Team.Channels.Where(c => c.Contexts.Any() && c.Id != null))
                 await UpdateChannelMembers(channel);
@@ -69,7 +75,32 @@ namespace UvA.TeamsLTI.Data
                     Team.AllowChannels, Team.AllowPrivateChannels, new[] { OwnerId }, new string[0]);
                 Team.GroupId = res.Id;
                 Team.Url = res.WebUrl;
+                Team.CreateEvent.DateExecuted = DateTime.Now;
                 await Data.UpdateTeam(Environment, CourseId, Team);
+
+                if (Course.CourseUrl != null)
+                {
+                    string channelId = null;
+                    for (int i = 0; true; i++)
+                    {
+                        try
+                        {
+                            channelId = (await Connector.GetChannel(res.Id, "General")).Id;
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            if (i >= 10)
+                            {
+                                Logger.LogError(ex, $"Failed to find channel for team {res.Id}");
+                                break;
+                            }
+                            await Task.Delay(5000 * i);
+                        }
+                    }
+                    if (channelId != null)
+                        await Connector.AddTab(res.Id, channelId, "Course", Course.CourseUrl);
+                }
             }
             else
             {
@@ -92,7 +123,6 @@ namespace UvA.TeamsLTI.Data
                     Team.Channels = Team.Channels.Append(new Channel { Name = name, Contexts = new[] { new Context { Type = type, Id = id, GroupSetId = groupSetId } } }).ToArray();
             }
 
-            Course = await CourseService.GetCourseInfo(CourseId);
             if (Team.CreateSectionChannels)
             {
                 var sections = Course.Sections.Where(s => Team.Contexts.Any(c => c.Type == ContextType.Course || c.Id == s.Id));
@@ -108,8 +138,9 @@ namespace UvA.TeamsLTI.Data
             }
         }
 
-        async Task UpdateChannels()
+        async Task<bool> UpdateChannels()
         {
+            var newChannels = Team.Channels.Any(c => c.Id == null);
             foreach (var channel in Team.Channels.Where(c => c.Id == null).ToArray())
             {
                 if (Team.Channels.Any(c => c.Name == channel.Name && c.Id != null))
@@ -117,6 +148,7 @@ namespace UvA.TeamsLTI.Data
                 channel.Id = await Connector.CreatePrivateChannel(Team.GroupId, channel.Name, new[] { OwnerId }, new string[0]);
                 await Data.UpdateChannels(Environment, CourseId, Team);
             }
+            return newChannels;
         }
 
         async Task UpdateUsers()

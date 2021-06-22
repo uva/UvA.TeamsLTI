@@ -12,10 +12,11 @@ namespace UvA.TeamsLTI.Services
     public class BrightspaceService : ICourseService
     {
         BrightspaceConnector Connector;
+        string Host;
 
         public BrightspaceService(IConfiguration config)
         {
-            Connector = new BrightspaceConnector(config["Host"], config["AppId"], config["AppKey"], config["UserId"], config["UserKey"]);
+            Connector = new BrightspaceConnector(Host = config["Host"], config["AppId"], config["AppKey"], config["UserId"], config["UserKey"]);
         }
 
         Dictionary<int, Bsp.Course> Courses = new Dictionary<int, Bsp.Course>();
@@ -37,7 +38,8 @@ namespace UvA.TeamsLTI.Services
                     Name = c.Name,
                     Id = c.GroupCategoryId,
                     GroupCount = c.GroupIds.Length
-                }).ToArray()
+                }).ToArray(),
+                CourseUrl = $"{Host}/d2l/home/{courseId}"
             };
         }
 

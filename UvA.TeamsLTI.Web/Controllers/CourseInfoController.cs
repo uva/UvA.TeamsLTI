@@ -85,7 +85,7 @@ namespace UvA.TeamsLTI.Web.Controllers
         [Authorize(Roles = LoginController.Teacher)]
         public async Task Sync()
         {
-            foreach (var team in (await Data.GetCourse(Environment, CourseId)).Teams)
+            foreach (var team in (await Data.GetCourse(Environment, CourseId)).Teams.Where(t => t.DeleteEvent?.DateExecuted == null).ToArray())
                 await Synchronizer.Process(Environment, CourseId, team);
         }
     }

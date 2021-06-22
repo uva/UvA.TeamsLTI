@@ -37,6 +37,7 @@ namespace UvA.TeamsLTI.Data.Models
     {
         public DateTime Date { get; set; }
         public string User { get; set; }
+        public DateTime? DateExecuted { get; set; }
     }
 
     public class Channel

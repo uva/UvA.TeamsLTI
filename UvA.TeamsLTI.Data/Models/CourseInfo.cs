@@ -16,6 +16,9 @@ namespace UvA.TeamsLTI.Data.Models
         public Section[] Sections { get; set; }
         public GroupSet[] GroupSets { get; set; }
         public Team[] Teams { get; set; } = Array.Empty<Team>();
+
+        [BsonIgnore]
+        public string CourseUrl { get; set; }
     }
 
     public class GroupSet
