@@ -16,7 +16,11 @@
       </label>
     </div>
 
-    <label class="input-header" v-if="selectedSections.length > 1 || course.groupSets.length > 0">Create private channels ({{ channelCount }}/30)</label>
+    <label class="input-header" v-if="selectedSections.length > 1 || course.groupSets.length > 0">Create private channels ({{ channelCount }}/30) 
+      <Tooltip>
+        There is a maximum of 30 private channels per team. Please note that channels that have been deleted less than 30 days ago are also counted.
+      </Tooltip>
+    </label>
     <label v-if="selectedSections.length > 1">
       <input type="checkbox" v-model="team.createSectionChannels" /> For each section 
     </label>
@@ -41,6 +45,7 @@
 import { Options, Vue } from 'vue-class-component';
 import { ContextType, CourseInfo, Section, Team } from '@/models/CourseInfo';
 import LoadingScreen from './LoadingScreen.vue';
+import Tooltip from './Tooltip.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
 import GroupSetWrapper from '@/models/GroupSetWrapper';
 import SectionWrapper from '@/models/SectionWrapper';
@@ -51,7 +56,7 @@ import axios from 'axios';
     course: Object,
     team: Object
   },
-  components: { LoadingScreen, ConfirmDialog }
+  components: { LoadingScreen, ConfirmDialog, Tooltip }
 })
 export default class TeamEditor extends Vue {
   team!: Team;
