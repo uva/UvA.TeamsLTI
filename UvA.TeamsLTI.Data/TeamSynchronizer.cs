@@ -48,7 +48,8 @@ namespace UvA.TeamsLTI.Data
 
             if (team.DeleteEvent != null)
             {
-                await Connector.DeleteGroup(team.GroupId);
+                if (team.GroupId != null)
+                    await Connector.DeleteGroup(team.GroupId);
                 team.DeleteEvent.DateExecuted = DateTime.Now;
                 await Data.UpdateTeam(Environment, CourseId, team);
                 return;
@@ -153,7 +154,8 @@ namespace UvA.TeamsLTI.Data
 
         async Task UpdateUsers()
         {
-            var users = (await Task.WhenAll(Team.Contexts.Select(c => CourseService.GetUsers(CourseId, c)))).SelectMany(a => a).ToArray();
+            var users = (await Task.WhenAll(Team.Contexts.Select(c => CourseService.GetUsers(CourseId, c)))).SelectMany(a => a)
+                .Where(u => u.Email != null).ToArray();
             var addedUsers = users.Where(u => !Team.Users.ContainsKey(u.Id.ToString())).ToArray();
             foreach (var user in addedUsers)
             {
