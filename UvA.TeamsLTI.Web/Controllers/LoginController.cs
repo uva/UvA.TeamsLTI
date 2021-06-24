@@ -51,7 +51,8 @@ namespace UvA.TeamsLTI.Web.Controllers
                   new Claim("courseName", context.GetProperty("title").GetString()),
                   new Claim(ClaimTypes.Role, roles.Any(e => e.Contains("Instructor")) ? Teacher : Student),
                   new Claim("environment", User.Claims.First().Issuer),
-                  new Claim(ClaimTypes.Email, User.FindFirstValue(ClaimTypes.Email))
+                  new Claim(ClaimTypes.Email, User.FindFirstValue(ClaimTypes.Email)),
+                  new Claim(ClaimTypes.NameIdentifier, User.FindFirstValue(ClaimTypes.NameIdentifier).Split("_").Last())
               },
               expires: DateTime.Now.AddMinutes(120),
               signingCredentials: credentials);

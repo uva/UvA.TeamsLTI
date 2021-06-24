@@ -38,6 +38,11 @@ namespace UvA.TeamsLTI.Web.Controllers
             if (current != null)
                 info = await Data.UpdateCourseInfo(info);
             info.Teams = info.Teams.Where(t => t.DeleteEvent == null).ToArray();
+            if (!User.IsInRole(LoginController.Teacher))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                info.Teams = info.Teams.Where(t => t.Users.ContainsKey(userId)).ToArray();
+            }
             return info;
         }
 
