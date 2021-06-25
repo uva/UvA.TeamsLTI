@@ -6,8 +6,12 @@
                 <h3>Delete team</h3>
                 Are you sure you want to delete this team? All conversations and files will be deleted.
 
+                <div style="margin-top: 10px">
+                  <label><input type="checkbox" v-model="isConfirmed" /> Confirm deletion</label>
+                </div>
+
                 <div style="margin-top: 20px">
-                    <button class="button-danger" @click="$emit('confirm')">Yes</button>
+                    <button class="button-primary" :disabled="!isConfirmed" @click="$emit('confirm')">Yes</button>
                     <button class="button-secondary" @click="$emit('close')">No</button>
                 </div>
             </div>
@@ -20,7 +24,7 @@
 import { Vue, Options } from 'vue-class-component';
 
 export default class ConfirmDialog extends Vue {
-    
+    isConfirmed = false;
 }
 </script>
 

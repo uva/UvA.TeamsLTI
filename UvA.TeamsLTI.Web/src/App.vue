@@ -34,6 +34,7 @@ button {
 
   &:disabled {
     background: #535353;
+    cursor: not-allowed;
   }
 
   &:hover:not(:disabled) {
