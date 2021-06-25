@@ -105,7 +105,9 @@ export default class TeamEditor extends Vue {
   }
 
   deleteTeam(): void {
+    this.isSaving = true;
     axios.delete(process.env.VUE_APP_ENDPOINT + '/CourseInfo/' + this.team.id).then(res => {
+      this.isSaving = false;
       this.$emit('delete');
     })
   }
