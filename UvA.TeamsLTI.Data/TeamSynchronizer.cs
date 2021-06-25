@@ -110,12 +110,11 @@ namespace UvA.TeamsLTI.Data
             else
             {
                 res = await Connector.GetTeam(Team.GroupId);
-                if (res.DisplayName != Team.Name
-                    || res.MemberSettings.AllowCreatePrivateChannels != Team.AllowPrivateChannels
+                if (res.DisplayName != Team.Name)
+                    await Connector.UpdateGroupName(Team.GroupId, Team.Name);
+                if (res.MemberSettings.AllowCreatePrivateChannels != Team.AllowPrivateChannels
                     || res.MemberSettings.AllowCreateUpdateChannels != Team.AllowChannels)
-                {
-                    // TODO: update
-                }
+                    await Connector.UpdateTeamSettings(Team.GroupId, Team.AllowChannels, Team.AllowPrivateChannels);
             }
             return res;
         }
