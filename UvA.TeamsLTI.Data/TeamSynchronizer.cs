@@ -138,7 +138,12 @@ namespace UvA.TeamsLTI.Data
             {
                 var groups = await CourseService.GetGroups(CourseId, id);
                 foreach (var group in groups)
+                {
+                    var name = group.Name;
+                    if (Team.GroupSetIds.Length > 1)
+                        group.Name += $" ({Course.GroupSets.First(s => s.Id == id).Name})";
                     checkChannel(ContextType.Group, group.Id, group.Name, id);
+                }
             }
         }
 
