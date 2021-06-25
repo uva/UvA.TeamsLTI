@@ -72,7 +72,11 @@ namespace UvA.TeamsLTI.Data
             Graph.Team res;
             if (Team.GroupId == null)
             {
-                res = await Connector.CreateTeam(Team.Name, $"{NicknamePrefix}-{Team.Contexts.First().Type.ToString().ToLower()}-{Team.Contexts.First().Id}",
+                var nickname = $"{NicknamePrefix}-{CourseId}";
+                if (Team.Contexts.First().Type != ContextType.Course)
+                    nickname += $"-{Team.Contexts.First().Type.ToString().ToLower()}-{Team.Contexts.First().Id}";
+                nickname += $"-{Team.Id}";
+                res = await Connector.CreateTeam(Team.Name, nickname.Length > 64 ? nickname.Substring(0, 64) : nickname,
                     Team.AllowChannels, Team.AllowPrivateChannels, new[] { OwnerId }, new string[0]);
                 Team.GroupId = res.Id;
                 Team.Url = res.WebUrl;
