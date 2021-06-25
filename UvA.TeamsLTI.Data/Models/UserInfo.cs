@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UvA.TeamsLTI.Data.Models
 {
-    public class UserInfo
+    public record UserInfo
     {
         public int Id { get; set; }
         public string Email { get; set; }

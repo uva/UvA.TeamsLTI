@@ -158,7 +158,7 @@ namespace UvA.TeamsLTI.Data
         async Task UpdateUsers()
         {
             var users = (await Task.WhenAll(Team.Contexts.Select(c => CourseService.GetUsers(CourseId, c)))).SelectMany(a => a)
-                .Where(u => u.Email != null).ToArray();
+                .Where(u => u.Email != null).Distinct().ToArray();
             var addedUsers = users.Where(u => !Team.Users.ContainsKey(u.Id.ToString())).ToArray();
             foreach (var user in addedUsers)
             {
@@ -186,7 +186,7 @@ namespace UvA.TeamsLTI.Data
 
         async Task UpdateChannelMembers(Channel channel)
         {
-            var users = (await Task.WhenAll(channel.Contexts.Select(c => CourseService.GetUsers(CourseId, c)))).SelectMany(a => a).ToArray();
+            var users = (await Task.WhenAll(channel.Contexts.Select(c => CourseService.GetUsers(CourseId, c)))).SelectMany(a => a).Distinct().ToArray();
             var addedUsers = users.Where(u => !channel.Users.ContainsKey(u.Id.ToString())).ToArray();
 
             foreach (var user in addedUsers.Where(u => Team.Users.ContainsKey(u.Id.ToString())))
