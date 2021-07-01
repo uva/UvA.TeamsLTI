@@ -16,29 +16,25 @@
       </div>
     </div>
     <div v-if="canEdit">
-      <button @click="newTeam">New team</button> <button v-if="course.teams.length > 0" @click="sync">Sync members</button>
+      <button @click="newTeam">New team</button> <button v-if="course.teams.length > 0" @click="$emit('sync')">Sync members</button>
     </div>
   </div>
-  <LoadingScreen text="Synchronizing" v-if="isSyncing" />
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import { ContextType, CourseInfo, Team } from '@/models/CourseInfo';
-import LoadingScreen from './LoadingScreen.vue';
 import axios from 'axios';
 
 @Options({
   props: {
     course: Object,
     canEdit: Boolean
-  },
-  components: { LoadingScreen }
+  }
 })
 export default class TeamList extends Vue {
   course!: CourseInfo;
   ContextType = ContextType;
-  isSyncing = false;
   canEdit = false;
 
   newTeam(): void {
@@ -52,11 +48,6 @@ export default class TeamList extends Vue {
           groupSetIds: []
       }
       this.$emit('edit', team);
-  }
-
-  sync(): void {
-    this.isSyncing = true;
-    axios.post(process.env.VUE_APP_ENDPOINT + '/CourseInfo/Sync').then(s => this.isSyncing = false);
   }
 }
 </script>

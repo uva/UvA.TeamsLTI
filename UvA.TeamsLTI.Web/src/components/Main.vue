@@ -3,8 +3,9 @@
     <h1>Microsoft Teams</h1>
     Retrieving data...
   </div>
-  <TeamList v-if="course && !selected" :course="course" @edit="editTeam" :canEdit="canEdit" />
-  <TeamEditor :course="course" :team="selected" v-if="selected" @delete="deleteSelected" @close="selected = null" />
+  <TeamList v-if="course && !selected" :course="course" @edit="editTeam" :canEdit="canEdit" @sync="sync" />
+  <TeamEditor :course="course" :team="selected" v-if="selected" @delete="deleteSelected" @close="selected = null" @save="selected = null; sync()" />
+  <LoadingScreen text="Synchronizing" v-if="isSyncing" />
 </template>
 
 <script lang="ts">
@@ -12,16 +13,18 @@ import { Options, Vue } from 'vue-class-component';
 import { CourseInfo, Team } from '@/models/CourseInfo';
 import TeamList from './TeamList.vue';
 import TeamEditor from './TeamEditor.vue';
+import LoadingScreen from './LoadingScreen.vue';
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 
 @Options({
-  components: { TeamList, TeamEditor }
+  components: { TeamList, TeamEditor, LoadingScreen }
 })
 export default class Main extends Vue {
   course: CourseInfo | null = null;
   selected: Team | null = null;
   canEdit = false;
+  isSyncing = false;
 
   public created(): void {
     const token = window.location.hash.substr(1);
@@ -39,6 +42,11 @@ export default class Main extends Vue {
 
   editTeam(team: Team): void {
     this.selected = team;
+  }
+
+  sync(): void {
+    this.isSyncing = true;
+    axios.post(process.env.VUE_APP_ENDPOINT + '/CourseInfo/Sync').then(s => this.isSyncing = false);
   }
 }
 </script>
