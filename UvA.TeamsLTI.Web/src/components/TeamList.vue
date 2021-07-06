@@ -5,6 +5,8 @@
 
     <div v-if="course.teams.length == 0">
       There are currently no teams for this course. 
+
+      <p>Use the below button to create a team and channels for this course.</p>
     </div>
     <div v-if="course.teams.length > 0">
       The following team{{ course.teams.length > 1 ? "s have" : " has" }} been created:
@@ -16,7 +18,7 @@
       </div>
     </div>
     <div v-if="canEdit">
-      <button @click="newTeam">New team</button> <button v-if="course.teams.length > 0" @click="$emit('sync')">Sync members</button>
+      <button @click="newTeam">New team</button> <button v-if="course.teams.length > 0" @click="$emit('sync')">Update members</button>
     </div>
   </div>
 </template>

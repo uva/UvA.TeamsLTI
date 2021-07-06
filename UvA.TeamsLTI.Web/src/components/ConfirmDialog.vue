@@ -4,7 +4,7 @@
         <div class="modal-wrapper">
             <div class="modal-container">
                 <h3>Delete team</h3>
-                Are you sure you want to delete this team? All conversations and files will be deleted.
+                Are you sure you want to delete this team? All conversations and files will be deleted, including any work uploaded by students or fellow lecturers.
 
                 <div style="margin-top: 10px">
                   <label><input type="checkbox" v-model="isConfirmed" /> Confirm deletion</label>
