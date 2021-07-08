@@ -1,6 +1,6 @@
 <template>
   <div >
-    <h1>Microsoft Teams <div>{{ course.name }}</div></h1>
+    <h1><div>{{ course.name }}</div></h1>
     
 
     <div v-if="course.teams.length == 0">
