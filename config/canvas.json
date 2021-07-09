@@ -1,8 +1,5 @@
 {
     "title": "Teams LTI",
-    "scopes": [
-        "https://canvas.instructure.com/lti/data_services/scope/list_event_types"
-    ],
     "extensions": [
         {
             "platform": "canvas.instructure.com",
@@ -13,7 +10,7 @@
                         "text": "Microsoft Teams",
                         "placement": "course_navigation",
                         "message_type": "LtiResourceLinkRequest",
-                        "target_link_uri": "https://teamslti.azurewebsite.net/Login",
+                        "target_link_uri": "https://teamslti.azurewebsites.net/Login",
                         "default": "disabled"
                     }
                 ]
@@ -26,7 +23,7 @@
     "custom_fields": {
         "courseId": "$Canvas.course.id"
     },
-    "public_jwk_url": "https://teamslti.azurewebsite.net/JWK",
-    "target_link_uri": "https://teamslti.azurewebsite.net/Login",
-    "oidc_initiation_url": "https://teamslti.azurewebsite.net/oidc"
+    "public_jwk_url": "https://teamslti.azurewebsites.net/JWK",
+    "target_link_uri": "https://teamslti.azurewebsites.net/Login",
+    "oidc_initiation_url": "https://teamslti.azurewebsites.net/oidc"
 }
