@@ -34,8 +34,8 @@
     </label>
 
     <label class="input-header">Options</label>
-    <label><input type="checkbox" v-model="team.allowChannels" /> Allow users to create channels </label>
-    <label><input type="checkbox" v-model="team.allowPrivateChannels" /> Allow users to create private channels </label>
+    <label><input type="checkbox" v-model="team.allowChannels" /> Allow all team members to create channels </label>
+    <label><input type="checkbox" v-model="team.allowPrivateChannels" /> Allow all team members to create private channels </label>
 
     <button @click="save" :disabled="(team.contexts[0].type == ContextType.Section && sections.filter(s => s.checked).length == 0) || team.name.trim().length < 2">{{ team.url ? "Update" : "Create team" }}</button>
     <button @click="$emit('close')" class="button-secondary">Cancel</button>
