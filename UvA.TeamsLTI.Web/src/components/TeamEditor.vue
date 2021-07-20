@@ -26,10 +26,10 @@
       </Tooltip>
     </label>
     <label v-if="selectedSections.length > 1">
-      <input type="checkbox" v-model="team.createSectionChannels" /> For each section 
+      <input type="checkbox" v-model="team.createSectionChannels" :disabled="team.createSectionChannels && hasSectionChannels" /> For each section 
     </label>
     <label v-for="set in groupSets" :key="set.name">
-        <input type="checkbox" v-model="set.checked" />
+        <input type="checkbox" :disabled="set.disabled" v-model="set.checked" />
         For each group in the category {{ set.name }} 
     </label>
 
@@ -129,6 +129,10 @@ export default class TeamEditor extends Vue {
 
   get isDuplicate(): boolean {
     return this.course.teams.filter(f => f.name == this.team.name && f !== this.team).length > 0;
+  }
+
+  get hasSectionChannels(): boolean {
+    return this.team.channels && this.team.channels.filter(c => c.contexts.filter(z => z.type == ContextType.Section).length > 0).length > 0;
   }
 }
 </script>
