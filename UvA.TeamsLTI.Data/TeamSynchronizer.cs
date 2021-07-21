@@ -60,9 +60,8 @@ namespace UvA.TeamsLTI.Data
                 team.Contexts[0].Id = courseId;
             var res = await UpdateTeam();
             await CheckChannels();
-            if (await UpdateChannels())
+            if (await UpdateUsers() | await UpdateChannels())
                 await Task.Delay(TimeSpan.FromSeconds(30)); // need to wait before adding users to new channels
-            await UpdateUsers();
             foreach (var channel in Team.Channels.Where(c => c.Contexts.Any() && c.Id != null))
                 await UpdateChannelMembers(channel);
         }
@@ -160,7 +159,7 @@ namespace UvA.TeamsLTI.Data
             return newChannels;
         }
 
-        async Task UpdateUsers()
+        async Task<bool> UpdateUsers()
         {
             var users = (await Task.WhenAll(Team.Contexts.Select(c => CourseService.GetUsers(CourseId, c)))).SelectMany(a => a)
                 .Where(u => u.Email != null).Distinct().ToArray();
@@ -187,6 +186,8 @@ namespace UvA.TeamsLTI.Data
             }
             if (deletedUsers.Any())
                 await Data.UpdateUsers(Environment, CourseId, Team);
+
+            return addedUsers.Any();
         }
 
         async Task UpdateChannelMembers(Channel channel)
