@@ -22,6 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UvA.TeamsLTI.Data;
 using UvA.TeamsLTI.Services;
+using UvA.TeamsLTI.Web.Services;
 
 namespace UvA.TeamsLTI.Web
 {
@@ -107,6 +108,9 @@ namespace UvA.TeamsLTI.Web
             });
             services.AddTransient<TeamsData>();
             services.AddTransient<TeamSynchronizer>();
+
+            services.AddTransient<TeamSynchronizerResolver>();
+            services.AddHostedService<SyncService>();
 
             services.AddAuthorization();
             services.AddControllers();

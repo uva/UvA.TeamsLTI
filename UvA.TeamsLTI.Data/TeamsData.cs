@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
@@ -20,6 +21,9 @@ namespace UvA.TeamsLTI.Data
             Database = new MongoClient(settings).GetDatabase("teams");
             Courses = Database.GetCollection<CourseInfo>("Courses");
         }
+
+        public async Task<IEnumerable<CourseInfo>> GetRelevantCourses(string env)
+            => await (await Courses.FindAsync(t => t.Environment == env && (t.EndDate == null || t.EndDate > DateTime.Now))).ToListAsync();
 
         public async Task<CourseInfo> GetCourse(string env, int id)
             => await (await Courses.FindAsync(f => f.Environment == env && f.CourseId == id)).FirstOrDefaultAsync();

@@ -32,24 +32,38 @@ namespace UvA.TeamsLTI.Data
         Team Team;
         CourseInfo Course;
 
-        TeamsConnector Connector;
+        IConfigurationSection TeamsConfig;
+        TeamsConnector _Connector;
+
+        TeamsConnector Connector
+            => _Connector ?? (_Connector = new TeamsConnector(Logger, TeamsConfig));
+
         string OwnerId, NicknamePrefix;
 
-        public async Task Process(string env, int courseId, Team team)
+        public async Task Process(string env, int courseId, Team team, bool batch = false)
         {
             Environment = env;
             CourseId = courseId;
             Team = team;
 
             var envSection = Config.GetSection("Environments").GetChildren().First(c => c["Authority"] == env);
-            Connector = new TeamsConnector(Logger, Config.GetSection("Teams").GetSection(envSection["Teams"]));
+            TeamsConfig = Config.GetSection("Teams").GetSection(envSection["Teams"]);
             OwnerId = envSection["OwnerId"];
             NicknamePrefix = envSection["NicknamePrefix"];
 
             if (team.DeleteEvent != null)
             {
                 if (team.GroupId != null)
-                    await Connector.DeleteGroup(team.GroupId);
+                {
+                    try
+                    {
+                        await Connector.DeleteGroup(team.GroupId);
+                    }
+                    catch (Graph.ServiceException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // already gone
+                    }
+                }
                 team.DeleteEvent.DateExecuted = DateTime.Now;
                 await Data.UpdateTeam(Environment, CourseId, team);
                 return;
@@ -58,7 +72,8 @@ namespace UvA.TeamsLTI.Data
 
             if (team.Contexts[0].Type == ContextType.Course)
                 team.Contexts[0].Id = courseId;
-            var res = await UpdateTeam();
+            if (!batch)
+                await UpdateTeam();
             await CheckChannels();
             if (await UpdateUsers() | await UpdateChannels())
                 await Task.Delay(TimeSpan.FromSeconds(30)); // need to wait before adding users to new channels
