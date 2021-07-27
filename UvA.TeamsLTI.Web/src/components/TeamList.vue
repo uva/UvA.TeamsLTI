@@ -6,7 +6,7 @@
     <div v-if="course.teams.length == 0">
       There are currently no teams for this course. 
 
-      <p>Use the below button to create a team and channels for this course.</p>
+      <p v-if="canEdit">Use the below button to create a team and channels for this course.</p>
     </div>
     <div v-if="course.teams.length > 0">
       The following team{{ course.teams.length > 1 ? "s have" : " has" }} been created:
