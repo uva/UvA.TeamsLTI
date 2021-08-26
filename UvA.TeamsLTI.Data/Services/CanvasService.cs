@@ -39,6 +39,18 @@ namespace UvA.TeamsLTI.Services
             };
         }
 
+        public DateTime? GetEndDate(int courseId)
+        {
+            var crs = Connector.FindCourseById(courseId);
+            return crs.EndDate;
+        }
+
+        public string GetName(int courseId)
+        {
+            var crs = Connector.FindCourseById(courseId);
+            return crs.Name;
+        }
+
         public async Task<IEnumerable<GroupInfo>> GetGroups(int courseId, int groupSetId)
         {
             var gs = new Cv.GroupCategory(Connector) { ID = groupSetId, CourseID = courseId };
