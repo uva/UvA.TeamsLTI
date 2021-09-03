@@ -64,7 +64,7 @@ namespace UvA.TeamsLTI.TestTool
                         GroupId = team.Id,
                         AllowChannels = gt.MemberSettings.AllowCreateUpdateChannels == true,
                         AllowPrivateChannels = gt.MemberSettings.AllowCreatePrivateChannels == true,
-                        Contexts = md.ContainsKey("SectionIds") ? (md["SectionIds"] as JArray).ToObject<int[]>().Select(sec => new Context { Id = sec, Type = ContextType.Section }).ToArray()
+                        Contexts = md.ContainsKey("SectionIds") ? JArray.Parse(md["SectionIds"].ToString()).ToObject<int[]>().Select(sec => new Context { Id = sec, Type = ContextType.Section }).ToArray()
                             : new[] { new Context { Id = group.Key, Type = ContextType.Course } },
                         GroupSetIds = md.ContainsKey("GroupSetIds") ? JArray.Parse(md["GroupSetIds"].ToString()).ToObject<int[]>() : new int[0],
                         CreateSectionChannels = md.Keys.Any(k => k.StartsWith("section-")),

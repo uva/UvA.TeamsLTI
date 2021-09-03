@@ -95,6 +95,7 @@ namespace UvA.TeamsLTI.Web
                     };
                     opt.ConfigurationManager = new ConfigurationManager { Config = config };
                     opt.TokenValidationParameters.ValidIssuer = config["Authority"];
+                    opt.ClaimActions.Remove("aud");
                 });
             }
 
@@ -102,9 +103,13 @@ namespace UvA.TeamsLTI.Web
             services.AddTransient<ICourseService>(sp =>
             {
                 var acc = sp.GetRequiredService<IHttpContextAccessor>();
-                var env = acc.HttpContext.User.FindFirstValue("environment");
-                var config = sp.GetRequiredService<IConfiguration>().GetSection("Environments").GetChildren().First(c => c["Authority"] == env);
-                return env.Contains("canvas") ? new CanvasService(config) : new BrightspaceService(config);
+                var aut = acc.HttpContext.User.FindFirstValue("authority");
+                var clientId = acc.HttpContext.User.FindFirstValue("clientId");
+                var configs = sp.GetRequiredService<IConfiguration>().GetSection("Environments").GetChildren().Where(c => c["Authority"] == aut);
+                if (configs.Count() > 1)
+                    configs = configs.Where(c => c["ClientId"] == clientId);
+                var config = configs.Single();
+                return aut.Contains("canvas") ? new CanvasService(config) : new BrightspaceService(config);
             });
             services.AddTransient<TeamsData>();
             services.AddTransient<TeamSynchronizer>();

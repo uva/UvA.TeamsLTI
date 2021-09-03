@@ -24,10 +24,12 @@ namespace UvA.TeamsLTI.Web.Controllers
         public const string Teacher = "Teacher";
 
         string JwtKey;
+        IConfiguration Environments;
 
         public LoginController(IConfiguration config)
         {
             JwtKey = config["Jwt:Key"];
+            Environments = config.GetSection("Environments");
         }
 
         [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
@@ -43,6 +45,12 @@ namespace UvA.TeamsLTI.Web.Controllers
             if (!int.TryParse(courseId, out _))
                 courseId = CustomClaim.GetProperty("courseid").ToString();
 
+            var aut = User.Claims.First().Issuer;
+            var cid = User.FindFirstValue("aud");
+            var env = Environments.GetChildren().Where(e => e["Authority"] == aut);
+            if (env.Count() > 1)
+                env = env.Where(e => e["ClientId"] == cid);
+
             var token = new JwtSecurityToken("lti",
               "lti",
               new[]
@@ -50,7 +58,9 @@ namespace UvA.TeamsLTI.Web.Controllers
                   new Claim("courseId", courseId),
                   new Claim("courseName", context.GetProperty("title").GetString()),
                   new Claim(ClaimTypes.Role, roles.Any(e => e.Contains("Instructor")) ? Teacher : Student),
-                  new Claim("environment", User.Claims.First().Issuer),
+                  new Claim("environment", env.Single()["Host"]),
+                  new Claim("authority", aut),
+                  new Claim("clientId", cid),
                   new Claim(ClaimTypes.Email, User.FindFirstValue(ClaimTypes.Email)),
                   new Claim(ClaimTypes.NameIdentifier, User.FindFirstValue(ClaimTypes.NameIdentifier).Split("_").Last())
               },
