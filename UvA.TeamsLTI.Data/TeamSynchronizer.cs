@@ -46,7 +46,7 @@ namespace UvA.TeamsLTI.Data
             CourseId = courseId;
             Team = team;
 
-            var envSection = Config.GetSection("Environments").GetChildren().First(c => c["Authority"] == env);
+            var envSection = Config.GetSection("Environments").GetChildren().First(c => c["Host"] == env);
             TeamsConfig = Config.GetSection("Teams").GetSection(envSection["Teams"]);
             OwnerId = envSection["OwnerId"];
             NicknamePrefix = envSection["NicknamePrefix"];
