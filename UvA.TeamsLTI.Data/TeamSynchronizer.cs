@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using UvA.Connectors.Teams;
@@ -119,6 +121,24 @@ namespace UvA.TeamsLTI.Data
                     }
                     if (channelId != null)
                         await Connector.AddTab(res.Id, channelId, "Course", Course.CourseUrl);
+                }
+                var triggerUrl = TeamsConfig["TriggerUrl"];
+                if (!string.IsNullOrEmpty(triggerUrl))
+                {
+                    try
+                    {
+                        await new HttpClient().PostAsJsonAsync(triggerUrl, new
+                        {
+                            TeamProperties = new
+                            {
+                                TeamID = Team.GroupId
+                            }
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, $"Error while calling trigger for {Team.Name}");
+                    }
                 }
             }
             else
