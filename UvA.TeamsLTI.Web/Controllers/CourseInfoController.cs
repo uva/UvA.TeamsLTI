@@ -37,7 +37,7 @@ namespace UvA.TeamsLTI.Web.Controllers
             var current = await Data.GetCourse(Environment, CourseId);
             if (current != null)
                 info = await Data.UpdateCourseInfo(info);
-            info.Teams = info.Teams.Where(t => t.DeleteEvent == null).ToArray();
+            info.Teams = info.Teams.Where(t => t.DeleteEvent == null).OrderBy(t => t.Name).ToArray();
             if (!User.IsInRole(LoginController.Teacher))
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -92,6 +92,16 @@ namespace UvA.TeamsLTI.Web.Controllers
         {
             foreach (var team in (await Data.GetCourse(Environment, CourseId)).Teams.Where(t => t.DeleteEvent?.DateExecuted == null).ToArray())
                 await Synchronizer.Process(Environment, CourseId, team);
+        }
+
+        [HttpPost]
+        [Route("BecomeOwner/{teamId}")]
+        [Authorize(Roles = LoginController.Teacher)]
+        public async Task BecomeOwner(string teamId)
+        {
+            var current = await Data.GetCourse(Environment, CourseId);
+            var team = current.Teams.First(t => t.Id == teamId);
+            await Synchronizer.AddOwner(Environment, team, User.FindFirstValue(ClaimTypes.Email));
         }
     }
 }

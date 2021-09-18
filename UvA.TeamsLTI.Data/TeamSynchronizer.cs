@@ -42,16 +42,21 @@ namespace UvA.TeamsLTI.Data
 
         string OwnerId, NicknamePrefix;
 
+        void LoadConfig(string env)
+        {
+            var envSection = Config.GetSection("Environments").GetChildren().First(c => c["Host"] == env);
+            TeamsConfig = Config.GetSection("Teams").GetSection(envSection["Teams"]);
+            OwnerId = envSection["OwnerId"];
+            NicknamePrefix = envSection["NicknamePrefix"];
+        }
+
         public async Task Process(string env, int courseId, Team team, bool batch = false)
         {
             Environment = env;
             CourseId = courseId;
             Team = team;
 
-            var envSection = Config.GetSection("Environments").GetChildren().First(c => c["Host"] == env);
-            TeamsConfig = Config.GetSection("Teams").GetSection(envSection["Teams"]);
-            OwnerId = envSection["OwnerId"];
-            NicknamePrefix = envSection["NicknamePrefix"];
+            LoadConfig(env);
 
             if (team.DeleteEvent != null)
             {
@@ -81,6 +86,12 @@ namespace UvA.TeamsLTI.Data
                 await Task.Delay(TimeSpan.FromSeconds(30)); // need to wait before adding users to new channels
             foreach (var channel in Team.Channels.Where(c => c.Contexts.Any() && c.Id != null))
                 await UpdateChannelMembers(channel);
+        }
+
+        public async Task AddOwner(string env, Team team, string uid)
+        {
+            LoadConfig(env);
+            await Connector.AddOwnerByEmail(team.GroupId, uid);
         }
 
         async Task<Graph.Team> UpdateTeam()
