@@ -38,8 +38,11 @@ namespace UvA.TeamsLTI.TestTool
             var log = CreateLogger<Program>();
 
             var groups = await conn.GetGroups($"startsWith(mailNickname, 'canvas-')", false);
+            var env = "https://canvas.uva.nl";
             foreach (var group in groups.GroupBy(g => int.Parse(g.MailNickname.Split('-')[1])))
             {
+                if (await data.GetCourse(env, group.Key) != null)
+                    continue;
                 CourseInfo info;
 
                 try
@@ -66,14 +69,14 @@ namespace UvA.TeamsLTI.TestTool
                         AllowPrivateChannels = gt.MemberSettings.AllowCreatePrivateChannels == true,
                         Contexts = md.ContainsKey("SectionIds") ? JArray.Parse(md["SectionIds"].ToString()).ToObject<int[]>().Select(sec => new Context { Id = sec, Type = ContextType.Section }).ToArray()
                             : new[] { new Context { Id = group.Key, Type = ContextType.Course } },
-                        GroupSetIds = md.ContainsKey("GroupSetIds") ? JArray.Parse(md["GroupSetIds"].ToString()).ToObject<int[]>() : new int[0],
+                        GroupSetIds = md.ContainsKey("GroupSetIds") ? JArray.Parse(md["GroupSetIds"].ToString().TrimStart('{').TrimEnd('}')).ToObject<int[]>() : new int[0],
                         CreateSectionChannels = md.Keys.Any(k => k.StartsWith("section-")),
                         CreateEvent = new Event { Date = DateTime.Now, DateExecuted = DateTime.Now, User = "<import>" },
                         Url = gt.WebUrl,
                         Channels = md.Where(e => e.Key.StartsWith("section-") || e.Key.StartsWith("group-")).Select(e =>
                         {
                             var id = int.Parse(e.Key.Split('-')[1]);
-                            var name = e.Key.StartsWith("section") ? info.Sections.First(s => s.Id == id).Name : cvgroups.First(g => g.Id == id).Name;
+                            var name = e.Key.StartsWith("section") ? info.Sections.FirstOrDefault(s => s.Id == id)?.Name : cvgroups.FirstOrDefault(g => g.Id == id)?.Name;
                             return new Channel
                             {
                                 Name = name,
@@ -84,7 +87,7 @@ namespace UvA.TeamsLTI.TestTool
                     };
                 }));
                 info.Name = cnv.GetName(group.Key);
-                info.Environment = "https://canvas.uva.nl";
+                info.Environment = env;
                 info.EndDate = cnv.GetEndDate(group.Key);
                 if (info.EndDate == null)
                     log.LogWarning($"No end date for {group.Key}: {info.Name}");
