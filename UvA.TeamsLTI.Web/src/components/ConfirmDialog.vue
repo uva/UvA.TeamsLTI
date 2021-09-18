@@ -3,11 +3,11 @@
     <div class="modal-mask">
         <div class="modal-wrapper">
             <div class="modal-container">
-                <h3>Delete team</h3>
-                Are you sure you want to delete this team? All conversations and files will be deleted, including any work uploaded by students or fellow lecturers.
+                <h3><slot name="header">Delete team</slot></h3>
+                <slot>Are you sure you want to delete this team? All conversations and files will be deleted, including any work uploaded by students or fellow lecturers.</slot>
 
                 <div style="margin-top: 10px">
-                  <label><input type="checkbox" v-model="isConfirmed" /> Confirm deletion</label>
+                  <label><input type="checkbox" v-model="isConfirmed" /> <slot name="confirm">Confirm deletion</slot></label>
                 </div>
 
                 <div style="margin-top: 20px">
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-class-component';
+import { Vue } from 'vue-class-component';
 
 export default class ConfirmDialog extends Vue {
     isConfirmed = false;

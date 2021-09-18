@@ -37,12 +37,23 @@
     <label><input type="checkbox" v-model="team.allowChannels" /> Allow all team members to create channels </label>
     <label><input type="checkbox" v-model="team.allowPrivateChannels" /> Allow all team members to create private channels </label>
 
+    <div class="link-container" v-if="team.url">
+      <a @click="isOwnerDialog = true" href="#">Become team owner</a>
+    </div>
+
     <button @click="save" :disabled="(team.contexts[0].type == ContextType.Section && sections.filter(s => s.checked).length == 0) || team.name.trim().length < 2">{{ team.url ? "Update" : "Create team" }}</button>
     <button @click="$emit('close')" class="button-secondary">Cancel</button>
     <button @click="isDeleting = true" v-if="team.url" class="button-secondary">Delete team</button>
   </div>
   <LoadingScreen v-if="isSaving" />
   <ConfirmDialog v-if="isDeleting" @confirm="deleteTeam" @close="isDeleting = false" />
+  <ConfirmDialog v-if="isOwnerDialog" @confirm="becomeOwner" @close="isOwnerDialog = false">
+    <template v-slot:header>Become owner</template>
+    <template v-slot:default>
+      Are you sure you want to become owner of the team? Note that add/removing members or deleting channels may break synchronization from the learning environment.
+    </template>
+    <template v-slot:confirm>I understand the risks</template>
+  </ConfirmDialog>
 </template>
 
 <script lang="ts">
@@ -72,6 +83,7 @@ export default class TeamEditor extends Vue {
 
   isSaving = false;
   isDeleting = false;
+  isOwnerDialog = false;
 
   created(): void {
     this.sections = this.course.sections.map(s => new SectionWrapper(this.team, s));
@@ -114,6 +126,14 @@ export default class TeamEditor extends Vue {
     axios.delete(process.env.VUE_APP_ENDPOINT + '/CourseInfo/' + this.team.id).then(res => {
       this.isSaving = false;
       this.$emit('delete');
+    })
+  }
+
+  becomeOwner(): void {
+    this.isOwnerDialog = false;
+    this.isSaving = true;
+    axios.post(process.env.VUE_APP_ENDPOINT + '/CourseInfo/BecomeOwner/' + this.team.id).then(res => {
+      this.isSaving = false;
     })
   }
 
@@ -166,5 +186,9 @@ export default class TeamEditor extends Vue {
         position: relative;
         top: 1px;
       }
+    }
+
+    .link-container {
+      margin-top: 15px;
     }
 </style>

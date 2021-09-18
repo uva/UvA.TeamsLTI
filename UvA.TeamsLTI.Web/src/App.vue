@@ -72,5 +72,9 @@ input[type='checkbox'], input[type='radio'] {
 a {
   color: $primary-color;
   text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 </style>

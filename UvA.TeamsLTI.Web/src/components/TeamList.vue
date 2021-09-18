@@ -26,7 +26,6 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import { ContextType, CourseInfo, Team } from '@/models/CourseInfo';
-import axios from 'axios';
 
 @Options({
   props: {
