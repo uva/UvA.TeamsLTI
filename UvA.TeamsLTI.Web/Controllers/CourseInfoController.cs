@@ -20,6 +20,8 @@ namespace UvA.TeamsLTI.Web.Controllers
         TeamsData Data;
         TeamSynchronizer Synchronizer;
 
+        const string EditRoles = LoginController.Manager + "," + LoginController.Teacher;
+
         string Environment => User.FindFirstValue("environment");
 
         public CourseInfoController(ICourseService cs, TeamsData data, TeamSynchronizer sync)
@@ -38,7 +40,7 @@ namespace UvA.TeamsLTI.Web.Controllers
             if (current != null)
                 info = await Data.UpdateCourseInfo(info);
             info.Teams = info.Teams.Where(t => t.DeleteEvent == null).OrderBy(t => t.Name).ToArray();
-            if (!User.IsInRole(LoginController.Teacher))
+            if (!User.IsInRole(LoginController.Teacher) && !User.IsInRole(LoginController.Manager))
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 info.Teams = info.Teams.Where(t => t.Users.ContainsKey(userId)).ToArray();
@@ -61,7 +63,7 @@ namespace UvA.TeamsLTI.Web.Controllers
         };
 
         [HttpPost]
-        [Authorize(Roles = LoginController.Teacher)]
+        [Authorize(Roles = EditRoles)]
         public async Task<string> Post(Team team)
         {
             var current = await Data.GetCourse(Environment, CourseId);
@@ -75,7 +77,7 @@ namespace UvA.TeamsLTI.Web.Controllers
 
         [HttpDelete]
         [Route("{teamId}")]
-        [Authorize(Roles = LoginController.Teacher)]
+        [Authorize(Roles = EditRoles)]
         public async Task Delete(string teamId)
         {
             var current = await Data.GetCourse(Environment, CourseId);
@@ -87,7 +89,7 @@ namespace UvA.TeamsLTI.Web.Controllers
 
         [HttpPost]
         [Route("Sync")]
-        [Authorize(Roles = LoginController.Teacher)]
+        [Authorize(Roles = EditRoles)]
         public async Task Sync()
         {
             foreach (var team in (await Data.GetCourse(Environment, CourseId)).Teams.Where(t => t.DeleteEvent?.DateExecuted == null).ToArray())
@@ -96,7 +98,7 @@ namespace UvA.TeamsLTI.Web.Controllers
 
         [HttpPost]
         [Route("BecomeOwner/{teamId}")]
-        [Authorize(Roles = LoginController.Teacher)]
+        [Authorize(Roles = EditRoles)]
         public async Task BecomeOwner(string teamId)
         {
             var current = await Data.GetCourse(Environment, CourseId);

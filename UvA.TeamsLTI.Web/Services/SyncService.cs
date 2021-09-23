@@ -32,7 +32,7 @@ namespace UvA.TeamsLTI.Web.Services
             {
                 var next = DateTime.Now.Date.AddHours(1);
                 if (next < DateTime.Now)
-                    next = DateTime.Now.AddDays(1);
+                    next = DateTime.Now.Date.AddDays(1);
                 Logger.LogInformation($"Running sync in {next.Subtract(DateTime.Now)}");
                 await Task.Delay(next.Subtract(DateTime.Now), stoppingToken);
 

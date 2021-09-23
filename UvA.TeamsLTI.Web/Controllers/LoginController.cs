@@ -22,6 +22,7 @@ namespace UvA.TeamsLTI.Web.Controllers
     {
         public const string Student = "Student";
         public const string Teacher = "Teacher";
+        public const string Manager = "Manager";
 
         string JwtKey;
         IConfiguration Environments;
@@ -57,7 +58,7 @@ namespace UvA.TeamsLTI.Web.Controllers
               {
                   new Claim("courseId", courseId),
                   new Claim("courseName", context.GetProperty("title").GetString()),
-                  new Claim(ClaimTypes.Role, roles.Any(e => e.Contains("Instructor")) ? Teacher : Student),
+                  new Claim(ClaimTypes.Role, roles.Any(e => e.Contains("http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor")) ? Manager : roles.Any(e => e.Contains("Instructor")) ? Teacher : Student),
                   new Claim("environment", env.Single()["Host"]),
                   new Claim("authority", aut),
                   new Claim("clientId", cid),
