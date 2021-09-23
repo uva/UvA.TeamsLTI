@@ -4,7 +4,7 @@
     Retrieving data...
   </div>
   <TeamList v-if="course && !selected" :course="course" @edit="editTeam" :canEdit="canEdit" @sync="sync" />
-  <TeamEditor :course="course" :team="selected" v-if="selected" @delete="deleteSelected" @close="selected = null" @save="selected = null; sync()" />
+  <TeamEditor :course="course" :team="selected" v-if="selected" @delete="deleteSelected" :canBecomeOwner="canBecomeOwner"  @close="selected = null" @save="selected = null; sync()" />
   <LoadingScreen text="Synchronizing" v-if="isSyncing" />
 </template>
 
@@ -24,12 +24,15 @@ export default class Main extends Vue {
   course: CourseInfo | null = null;
   selected: Team | null = null;
   canEdit = false;
+  canBecomeOwner = false;
   isSyncing = false;
 
   public created(): void {
     const token = window.location.hash.substr(1);
     const jwt = jwt_decode<{ [claim: string]: string }>(token);
-    this.canEdit = jwt["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] == "Teacher";
+    const role = jwt["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    this.canEdit = role == "Teacher" || role == "Manager";
+    this.canBecomeOwner = role == "Manager";
 
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     axios.get(process.env.VUE_APP_ENDPOINT + '/CourseInfo').then(resp => this.course = resp.data);

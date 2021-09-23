@@ -37,7 +37,7 @@
     <label><input type="checkbox" v-model="team.allowChannels" /> Allow all team members to create channels </label>
     <label><input type="checkbox" v-model="team.allowPrivateChannels" /> Allow all team members to create private channels </label>
 
-    <div class="link-container" v-if="team.url">
+    <div class="link-container" v-if="team.url && canBecomeOwner">
       <a @click="isOwnerDialog = true" href="#">Become team owner</a>
     </div>
 
@@ -69,7 +69,8 @@ import axios from 'axios';
 @Options({
   props: {
     course: Object,
-    team: Object
+    team: Object,
+    canBecomeOwner: Boolean
   },
   components: { LoadingScreen, ConfirmDialog, Tooltip }
 })
@@ -80,6 +81,8 @@ export default class TeamEditor extends Vue {
 
   sections!: SectionWrapper[];
   groupSets!: GroupSetWrapper[];
+
+  canBecomeOwner = false;
 
   isSaving = false;
   isDeleting = false;
