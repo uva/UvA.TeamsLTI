@@ -66,8 +66,8 @@ namespace UvA.TeamsLTI.Services
             var crs = new Cv.Course(Connector) { ID = courseId };
             var users = context.Type switch
             {
-                ContextType.Course => crs.GetUsersByType(Cv.EnrollmentType.Student),
-                ContextType.Section => new Cv.Section(Connector) { ID = context.Id, CourseID = courseId }.Enrollments.Where(e => e.Type == Cv.EnrollmentType.Student).Select(e => e.User),
+                ContextType.Course => crs.GetUsersByType(Cv.EnrollmentType.Student).Concat(crs.GetUsersByType(Cv.EnrollmentType.TA)),
+                ContextType.Section => new Cv.Section(Connector) { ID = context.Id, CourseID = courseId }.Enrollments.Where(e => e.Type == Cv.EnrollmentType.Student || e.Type == Cv.EnrollmentType.TA).Select(e => e.User),
                 ContextType.Group => new Cv.Group(Connector) { ID = context.Id, GroupCategoryID = context.GroupSetId }.Users,
                 _ => throw new NotImplementedException()
             };
