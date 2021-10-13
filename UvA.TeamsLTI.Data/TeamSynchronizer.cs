@@ -94,6 +94,13 @@ namespace UvA.TeamsLTI.Data
             await Connector.AddOwnerByEmail(team.GroupId, uid);
         }
 
+        public async Task Clean(string env, int courseId, Team team)
+        {
+            foreach (var chan in team.Channels)
+                chan.Users.Clear();
+            await Data.UpdateChannels(env, courseId, team);
+        }
+
         async Task<Graph.Team> UpdateTeam()
         {
             Graph.Team res;
@@ -246,6 +253,14 @@ namespace UvA.TeamsLTI.Data
                 var memId = await Connector.AddChannelMember(Team.GroupId, channel.Id, Team.Users[user.Id.ToString()]);
                 if (memId != null)
                     channel.Users.Add(user.Id.ToString(), memId);
+                else
+                {
+                    // already in there?
+                    var cur = await Connector.GetChannelMembers(Team.GroupId, channel.Id);
+                    var mem = cur.FirstOrDefault(c => c.UserId == Team.Users[user.Id.ToString()]);
+                    if (mem != null)
+                        channel.Users.Add(user.Id.ToString(), memId);
+                }
             }
             if (addedUsers.Any())
                 await Data.UpdateChannels(Environment, CourseId, Team);
