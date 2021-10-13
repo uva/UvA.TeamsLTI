@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Cv = UvA.DataNose.Connectors.Canvas;
 using UvA.TeamsLTI.Data.Models;
 using UvA.TeamsLTI.Services;
+using System.Net;
 
 namespace UvA.TeamsLTI.Services
 {
@@ -64,13 +65,21 @@ namespace UvA.TeamsLTI.Services
         public async Task<IEnumerable<UserInfo>> GetUsers(int courseId, Context context)
         {
             var crs = new Cv.Course(Connector) { ID = courseId };
-            var users = context.Type switch
+            IEnumerable<Cv.User> users = new Cv.User[0];
+            try
             {
-                ContextType.Course => crs.GetUsersByType(Cv.EnrollmentType.Student).Concat(crs.GetUsersByType(Cv.EnrollmentType.TA)),
-                ContextType.Section => new Cv.Section(Connector) { ID = context.Id, CourseID = courseId }.Enrollments.Where(e => e.Type == Cv.EnrollmentType.Student || e.Type == Cv.EnrollmentType.TA).Select(e => e.User),
-                ContextType.Group => new Cv.Group(Connector) { ID = context.Id, GroupCategoryID = context.GroupSetId }.Users,
-                _ => throw new NotImplementedException()
-            };
+                users = context.Type switch
+                {
+                    ContextType.Course => crs.GetUsersByType(Cv.EnrollmentType.Student).Concat(crs.GetUsersByType(Cv.EnrollmentType.TA)),
+                    ContextType.Section => new Cv.Section(Connector) { ID = context.Id, CourseID = courseId }.Enrollments.Where(e => e.Type == Cv.EnrollmentType.Student || e.Type == Cv.EnrollmentType.TA).Select(e => e.User),
+                    ContextType.Group => new Cv.Group(Connector) { ID = context.Id, GroupCategoryID = context.GroupSetId }.Users,
+                    _ => throw new NotImplementedException()
+                };
+            }
+            catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotFound)
+            {
+                // skip, group or section doesn't exist anymore
+            }
             return users.Concat(crs.GetUsersByType(Cv.EnrollmentType.Teacher)).Select(u => new UserInfo
             {
                 Username = u.LoginID,
