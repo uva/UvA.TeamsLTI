@@ -91,7 +91,15 @@ namespace UvA.TeamsLTI.Data
         public async Task AddOwner(string env, Team team, string uid)
         {
             LoadConfig(env);
-            await Connector.AddOwnerByEmail(team.GroupId, uid);
+            var user = await Connector.FindUser(uid);
+            await Connector.AddOwnerById(team.GroupId, user.Id);
+            foreach (var channel in team.Channels.Where(c => !string.IsNullOrEmpty(c.Id)))
+            {
+                var cur = await Connector.GetChannelMembers(team.GroupId, channel.Id);
+                var mem = cur.FirstOrDefault(c => c.UserId == user.Id);
+                if (mem != null)
+                    await Connector.ChangeChannelMemberRole(team.GroupId, channel.Id, mem.Id, true);
+            }
         }
 
         public async Task Clean(string env, int courseId, Team team)
