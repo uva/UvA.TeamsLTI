@@ -50,7 +50,7 @@
   <ConfirmDialog v-if="isOwnerDialog" @confirm="becomeOwner" @close="isOwnerDialog = false">
     <template v-slot:header>Become owner</template>
     <template v-slot:default>
-      Are you sure you want to become owner of the team? Note that add/removing members or deleting channels may break synchronization from the learning environment.
+      Are you sure you want to become owner of the team? Note that adding/removing members or deleting channels may break synchronization from the learning environment.
     </template>
     <template v-slot:confirm>I understand the risks</template>
   </ConfirmDialog>

@@ -4,7 +4,8 @@
     
 
     <div v-if="course.teams.length == 0">
-      There are currently no teams for this course. 
+      <p v-if="canEdit">There are currently no teams for this course. </p>
+      <p v-if="!canEdit">You are not currently a member of any team for this course.</p>
 
       <p v-if="canEdit">Use the below button to create a team and channels for this course.</p>
     </div>
