@@ -280,7 +280,7 @@ namespace UvA.TeamsLTI.Data
                 channel.Users.Remove(user.Key);
             }
             if (deletedUsers.Any())
-                await Data.UpdateUsers(Environment, CourseId, Team);
+                await Data.UpdateChannels(Environment, CourseId, Team);
         }
     }
 }

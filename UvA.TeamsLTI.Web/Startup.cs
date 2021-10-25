@@ -115,6 +115,7 @@ namespace UvA.TeamsLTI.Web
             services.AddTransient<TeamSynchronizer>();
 
             services.AddTransient<TeamSynchronizerResolver>();
+            services.AddTransient<SyncEngine>();
             services.AddHostedService<SyncService>();
 
             services.AddAuthorization();
