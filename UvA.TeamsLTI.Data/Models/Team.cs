@@ -24,6 +24,7 @@ namespace UvA.TeamsLTI.Data.Models
 
         public bool AllowChannels { get; set; }
         public bool AllowPrivateChannels { get; set; }
+        public bool AddAllLecturers { get; set; }
         public bool CreateSectionChannels { get; set; }
         public int[] GroupSetIds { get; set; }
         public Event DeleteEvent { get; set; }

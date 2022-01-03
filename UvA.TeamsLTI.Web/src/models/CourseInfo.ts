@@ -26,6 +26,7 @@ export interface Team {
 
     allowChannels: boolean;
     allowPrivateChannels: boolean;
+    addAllLecturers: boolean;
     
     createSectionChannels: boolean;
     groupSetIds: number[];

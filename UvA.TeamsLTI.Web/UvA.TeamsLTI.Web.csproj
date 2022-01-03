@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>9eeb434b-c0a5-4aea-ad36-04390b14aff2</UserSecretsId>
   </PropertyGroup>
 
@@ -13,7 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace.csproj" />
     <ProjectReference Include="..\UvA.TeamsLTI.Data\UvA.TeamsLTI.Data.csproj" />
-    <ProjectReference Include="\aspnetcore\src\Security\Authentication\OpenIdConnect\src\Microsoft.AspNetCore.Authentication.OpenIdConnect.csproj" />
+    <ProjectReference Include="..\..\aspnetcore\src\Security\Authentication\OpenIdConnect\src\Microsoft.AspNetCore.Authentication.OpenIdConnect.csproj" />
   </ItemGroup>
 
   <ItemGroup>

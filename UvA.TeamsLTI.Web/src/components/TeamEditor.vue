@@ -36,6 +36,7 @@
     <label class="input-header">Options</label>
     <label><input type="checkbox" v-model="team.allowChannels" /> Allow all team members to create channels </label>
     <label><input type="checkbox" v-model="team.allowPrivateChannels" /> Allow all team members to create private channels </label>
+    <label><input type="checkbox" v-model="team.addAllLecturers" /> Add all lecturers to the team </label>
 
     <div class="link-container" v-if="team.url && canBecomeOwner">
       <a @click="isOwnerDialog = true" href="#">Become team owner</a>

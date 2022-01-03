@@ -54,6 +54,7 @@ namespace UvA.TeamsLTI.Data
                 existing.Contexts = team.Contexts;
                 existing.AllowChannels = team.AllowChannels;
                 existing.AllowPrivateChannels = team.AllowPrivateChannels;
+                existing.AddAllLecturers = team.AddAllLecturers;
                 existing.Name = team.Name;
                 existing.GroupSetIds = team.GroupSetIds;
                 existing.CreateSectionChannels = team.CreateSectionChannels;

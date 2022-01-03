@@ -223,6 +223,7 @@ namespace UvA.TeamsLTI.Data
         async Task<bool> UpdateUsers()
         {
             var users = (await Task.WhenAll(Team.Contexts.Select(c => CourseService.GetUsers(CourseId, c)))).SelectMany(a => a)
+                .Where(u => !u.IsTeacher || Team.AddAllLecturers || string.Equals(u.Email, Team.CreateEvent?.User, StringComparison.CurrentCultureIgnoreCase))
                 .Where(u => u.Email != null).Distinct().ToArray();
             var addedUsers = users.Where(u => !Team.Users.ContainsKey(u.Id.ToString())).ToArray();
             foreach (var user in addedUsers)
