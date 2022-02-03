@@ -65,7 +65,8 @@ namespace UvA.TeamsLTI.Services
                     Username = e.User.OrgDefinedId,
                     Email = e.User.EmailAddress,
                     Id = int.Parse(e.User.Identifier),
-                    IsTeacher = e.Role.Id == 109
+                    IsTeacher = e.Role.Id != 110,
+                    IsCoordinator = e.Role.Id == 109
                 }).ToArray();
             switch (context.Type)
             {
@@ -73,10 +74,10 @@ namespace UvA.TeamsLTI.Services
                     return users;
                 case ContextType.Section:
                     var sec = crs.Sections.First(s => s.SectionId == context.Id);
-                    return users.Where(u => u.IsTeacher || sec.Enrollments.Contains(u.Id));
+                    return users.Where(u => u.IsCoordinator || sec.Enrollments.Contains(u.Id));
                 case ContextType.Group:
                     var group = crs.GroupCategories.First(c => c.GroupCategoryId == context.GroupSetId).Groups.First(g => g.GroupId == context.Id);
-                    return users.Where(u => u.IsTeacher || group.Enrollments.Contains(u.Id));
+                    return users.Where(u => u.IsCoordinator || group.Enrollments.Contains(u.Id));
             }
             throw new ArgumentException("Invalid ContextType");
         }
