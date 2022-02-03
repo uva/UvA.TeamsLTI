@@ -11,7 +11,8 @@ namespace UvA.TeamsLTI.Data.Models
         public int Id { get; set; }
         public string Email { get; set; }
         public string Username { get; set; }
-        public bool IsTeacher { get; internal set; }
+        public bool IsTeacher { get; set; }
+        public bool IsCoordinator { get; set; }
 
         public override string ToString() => $"{Id}: {Email}";
     }
