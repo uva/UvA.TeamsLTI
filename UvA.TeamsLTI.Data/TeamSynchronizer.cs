@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
@@ -266,10 +267,18 @@ namespace UvA.TeamsLTI.Data
                 else
                 {
                     // already in there?
-                    var cur = await Connector.GetChannelMembers(Team.GroupId, channel.Id);
-                    var mem = cur.FirstOrDefault(c => c.UserId == Team.Users[user.Id.ToString()]);
-                    if (mem != null)
-                        channel.Users.Add(user.Id.ToString(), memId);
+                    try
+                    {
+                        var cur = await Connector.GetChannelMembers(Team.GroupId, channel.Id);
+                        var mem = cur.FirstOrDefault(c => c.UserId == Team.Users[user.Id.ToString()]);
+                        if (mem != null)
+                            channel.Users.Add(user.Id.ToString(), memId);
+                    }
+                    catch (Graph.ServiceException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        Logger.LogError($"Channel {channel.Id} in team {Team.GroupId} not found");
+                        return;
+                    }
                 }
             }
             if (addedUsers.Any())
