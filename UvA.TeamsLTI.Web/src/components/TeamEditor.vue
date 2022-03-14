@@ -49,10 +49,12 @@
         Use this option to manage the team and private channels for sections or groups. You can add and remove members and delete channels.
       </Tooltip>
     </div>
-
-    <button @click="save" :disabled="(team.contexts[0].type == ContextType.Section && sections.filter(s => s.checked).length == 0) || team.name.trim().length < 2">{{ team.url ? "Update" : "Create team" }}</button>
-    <button @click="$emit('close')" class="button-secondary">Cancel</button>
-    <button @click="isDeleting = true" v-if="team.url" class="button-secondary">Delete team</button>
+    
+    <div>
+      <button @click="save" :disabled="(team.contexts[0].type == ContextType.Section && sections.filter(s => s.checked).length == 0) || team.name.trim().length < 2">{{ team.url ? "Update" : "Create team" }}</button>
+      <button @click="$emit('close')" class="button-secondary">Cancel</button>
+      <button @click="isDeleting = true" v-if="team.url" class="button-secondary">Delete team</button>
+    </div>
   </div>
   <LoadingScreen v-if="isSaving" />
   <ConfirmDialog v-if="isDeleting" @confirm="deleteTeam" @close="isDeleting = false" />
