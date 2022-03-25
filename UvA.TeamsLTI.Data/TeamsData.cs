@@ -48,12 +48,14 @@ namespace UvA.TeamsLTI.Data
             var course = await GetCourse(env, id);
             var existing = course.Teams.FirstOrDefault(t => t.Id == team.Id);
             if (existing == null)
-                await Courses.UpdateOneAsync(i => i.CourseId == id, Builders<CourseInfo>.Update.Push(i => i.Teams, team));
+                await Courses.UpdateOneAsync(i => i.CourseId == id && i.Environment == env,
+                    Builders<CourseInfo>.Update.Push(i => i.Teams, team));
             else
             {
                 existing.Contexts = team.Contexts;
                 existing.AllowChannels = team.AllowChannels;
                 existing.AllowPrivateChannels = team.AllowPrivateChannels;
+                existing.AddAllLecturers = team.AddAllLecturers;
                 existing.Name = team.Name;
                 existing.GroupSetIds = team.GroupSetIds;
                 existing.CreateSectionChannels = team.CreateSectionChannels;

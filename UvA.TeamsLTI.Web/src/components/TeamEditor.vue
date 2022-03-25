@@ -36,14 +36,25 @@
     <label class="input-header">Options</label>
     <label><input type="checkbox" v-model="team.allowChannels" /> Allow all team members to create channels </label>
     <label><input type="checkbox" v-model="team.allowPrivateChannels" /> Allow all team members to create private channels </label>
+    <label style="display: inline-block; margin-right: 3px">
+      <input type="checkbox" v-model="team.addAllLecturers" /> Add all lecturers to the team
+    </label>
+    <Tooltip>
+      Uncheck this box if you want to be added as the only lecturer to the team.
+    </Tooltip>
 
     <div class="link-container" v-if="team.url && canBecomeOwner">
-      <a @click="isOwnerDialog = true" href="#">Become team owner</a>
+      <a @click="isOwnerDialog = true" href="#" style="display: inline-block; margin-right: 3px">Become team owner</a>
+      <Tooltip>
+        Use this option to manage the team and private channels for sections or groups. You can add and remove members and delete channels.
+      </Tooltip>
     </div>
-
-    <button @click="save" :disabled="(team.contexts[0].type == ContextType.Section && sections.filter(s => s.checked).length == 0) || team.name.trim().length < 2">{{ team.url ? "Update" : "Create team" }}</button>
-    <button @click="$emit('close')" class="button-secondary">Cancel</button>
-    <button @click="isDeleting = true" v-if="team.url" class="button-secondary">Delete team</button>
+    
+    <div>
+      <button @click="save" :disabled="(team.contexts[0].type == ContextType.Section && sections.filter(s => s.checked).length == 0) || team.name.trim().length < 2">{{ team.url ? "Update" : "Create team" }}</button>
+      <button @click="$emit('close')" class="button-secondary">Cancel</button>
+      <button @click="isDeleting = true" v-if="team.url" class="button-secondary">Delete team</button>
+    </div>
   </div>
   <LoadingScreen v-if="isSaving" />
   <ConfirmDialog v-if="isDeleting" @confirm="deleteTeam" @close="isDeleting = false" />

@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.TeamsLTI.Web", "UvA.TeamsLTI.Web\UvA.TeamsLTI.Web.csproj", "{4230449A-655E-43E5-96F9-FDF93911AFA8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Authentication.OpenIdConnect", "..\..\..\..\..\aspnetcore\src\Security\Authentication\OpenIdConnect\src\Microsoft.AspNetCore.Authentication.OpenIdConnect.csproj", "{0474B7D9-B8AC-4CB5-AF58-4BDB5A1AABA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Authentication.OpenIdConnect", "..\aspnetcore\src\Security\Authentication\OpenIdConnect\src\Microsoft.AspNetCore.Authentication.OpenIdConnect.csproj", "{0474B7D9-B8AC-4CB5-AF58-4BDB5A1AABA5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.Connectors.Brightspace", "..\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace.csproj", "{0193E554-213E-4858-80E3-A4ED684FA992}"
 EndProject
