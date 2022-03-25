@@ -73,11 +73,11 @@ namespace UvA.TeamsLTI.Services
                 case ContextType.Course:
                     return users;
                 case ContextType.Section:
-                    var sec = crs.Sections.First(s => s.SectionId == context.Id);
-                    return users.Where(u => u.IsCoordinator || sec.Enrollments.Contains(u.Id));
+                    var sec = crs.Sections.FirstOrDefault(s => s.SectionId == context.Id);
+                    return users.Where(u => u.IsCoordinator || sec?.Enrollments.Contains(u.Id) == true);
                 case ContextType.Group:
-                    var group = crs.GroupCategories.First(c => c.GroupCategoryId == context.GroupSetId).Groups.First(g => g.GroupId == context.Id);
-                    return users.Where(u => u.IsCoordinator || group.Enrollments.Contains(u.Id));
+                    var group = crs.GroupCategories.FirstOrDefault(c => c.GroupCategoryId == context.GroupSetId)?.Groups.FirstOrDefault(g => g.GroupId == context.Id);
+                    return users.Where(u => u.IsCoordinator || group?.Enrollments.Contains(u.Id) == true);
             }
             throw new ArgumentException("Invalid ContextType");
         }

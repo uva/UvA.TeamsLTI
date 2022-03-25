@@ -62,21 +62,30 @@ namespace UvA.TeamsLTI.Services
             });
         }
 
+        private readonly Dictionary<int, Dictionary<int, Cv.User>> _courseUsers = new();
+
         public async Task<IEnumerable<UserInfo>> GetUsers(int courseId, Context context)
         {
             var crs = new Cv.Course(Connector) { ID = courseId };
-            IEnumerable<Cv.User> users = new Cv.User[0];
+            IEnumerable<Cv.User> users = Array.Empty<Cv.User>();
             try
             {
+                if (!_courseUsers.ContainsKey(courseId))
+                    _courseUsers.Add(courseId, crs.GetUsersByType(Cv.EnrollmentType.Student)
+                        .Concat(crs.GetUsersByType(Cv.EnrollmentType.TA))
+                        .ToDictionary(u => u.ID!.Value));
+                var dict = _courseUsers[courseId];
                 users = context.Type switch
                 {
-                    ContextType.Course => crs.GetUsersByType(Cv.EnrollmentType.Student).Concat(crs.GetUsersByType(Cv.EnrollmentType.TA)),
-                    ContextType.Section => new Cv.Section(Connector) { ID = context.Id, CourseID = courseId }.Enrollments.Where(e => e.Type == Cv.EnrollmentType.Student || e.Type == Cv.EnrollmentType.TA).Select(e => e.User),
+                    ContextType.Course => dict.Values,
+                    ContextType.Section => new Cv.Section(Connector) { ID = context.Id, CourseID = courseId }
+                        .Enrollments.Where(e => e.Type == Cv.EnrollmentType.Student || e.Type == Cv.EnrollmentType.TA)
+                        .Select(e => dict[e.User.ID!.Value]),
                     ContextType.Group => new Cv.Group(Connector) { ID = context.Id, GroupCategoryID = context.GroupSetId }.Users,
                     _ => throw new NotImplementedException()
                 };
             }
-            catch (WebException ex) when ((ex.Response as HttpWebResponse).StatusCode == HttpStatusCode.NotFound)
+            catch (WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.NotFound)
             {
                 // skip, group or section doesn't exist anymore
             }
