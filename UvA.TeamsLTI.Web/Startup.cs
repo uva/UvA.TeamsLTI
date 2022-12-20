@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +11,7 @@ using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -20,8 +19,10 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using UvA.LTI;
 using UvA.TeamsLTI.Data;
 using UvA.TeamsLTI.Services;
+using UvA.TeamsLTI.Web.Controllers;
 using UvA.TeamsLTI.Web.Services;
 
 namespace UvA.TeamsLTI.Web
@@ -54,14 +55,9 @@ namespace UvA.TeamsLTI.Web
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
 
-            var auth = services.AddAuthentication(opt =>
+            services.AddAuthentication(opt =>
                 {
                     opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    opt.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                })
-                .AddCookie(opt =>
-                {
-                    opt.Cookie.SameSite = SameSiteMode.None;
                 })
                 .AddJwtBearer(opt =>
                 {
@@ -75,29 +71,6 @@ namespace UvA.TeamsLTI.Web
                         ValidateAudience = false
                     };
                 });
-            foreach (var config in Config.GetSection("Environments").GetChildren())
-            {
-                auth.AddOpenIdConnect(config.Key, opt =>
-                {
-                    opt.Authority = config["Authority"] + "/";
-                    opt.ClientId = config["ClientId"];
-                    opt.ResponseMode = "form_post";
-                    opt.AuthenticationMethod = OpenIdConnectRedirectBehavior.FormPost;
-                    opt.Scope.Clear();
-                    opt.Scope.Add("openid");
-                    opt.Prompt = "none";
-                    opt.InitiationPath = new PathString("/oidc");
-                    opt.SkipUnrecognizedRequests = true;
-                    opt.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    opt.Configuration = new OpenIdConnectConfiguration
-                    {
-                        AuthorizationEndpoint = config["Endpoint"]
-                    };
-                    opt.ConfigurationManager = new ConfigurationManager { Config = config };
-                    opt.TokenValidationParameters.ValidIssuer = config["Authority"];
-                    opt.ClaimActions.Remove("aud");
-                });
-            }
 
             services.AddHttpContextAccessor();
             services.AddTransient<ICourseService>(sp =>
@@ -169,6 +142,33 @@ namespace UvA.TeamsLTI.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
+            foreach (var config in Config.GetSection("Environments").GetChildren())
+            {
+                app.UseLti(new LtiOptions
+                {
+                    AuthenticateUrl = config["Endpoint"],
+                    ClientId = config["ClientId"],
+                    InitiationEndpoint = "oidc",
+                    LoginEndpoint = "signin-oidc",
+                    SigningKey = Config["Jwt:Key"],
+                    JwksUrl = config["JwksUrl"],
+                    RedirectUrl = "",
+                    ClaimsMapping = p => new Dictionary<string, object>
+                    {
+                        ["courseId"] = int.TryParse(p.Context.Id, out _) ? p.Context.Id 
+                            : p.CustomClaims?.GetProperty("courseid").ToString(),
+                        ["courseName"] = p.Context.Title,
+                        [ClaimTypes.Role] = p.Roles.Any(e => e.Contains("http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor"))
+                            ? LoginController.Manager : p.Roles.Any(e => e.Contains("Instructor")) 
+                                ? LoginController.Teacher : LoginController.Student,
+                        ["environment"] = config["Host"],
+                        [ClaimTypes.Email] = p.Email,
+                        [ClaimTypes.NameIdentifier] = p.NameIdentifier.Split("_").Last(),
+                        ["authority"] = config["Authority"]
+                    }
+                });
+            }
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

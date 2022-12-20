@@ -30,7 +30,7 @@ export default class Main extends Vue {
   public created(): void {
     const token = window.location.hash.substr(1);
     const jwt = jwt_decode<{ [claim: string]: string }>(token);
-    const role = jwt["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    const role = jwt["role"];
     this.canEdit = role == "Teacher" || role == "Manager";
     this.canBecomeOwner = role == "Manager";
 

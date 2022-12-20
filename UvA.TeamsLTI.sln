@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.TeamsLTI.Web", "UvA.TeamsLTI.Web\UvA.TeamsLTI.Web.csproj", "{4230449A-655E-43E5-96F9-FDF93911AFA8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Authentication.OpenIdConnect", "..\aspnetcore\src\Security\Authentication\OpenIdConnect\src\Microsoft.AspNetCore.Authentication.OpenIdConnect.csproj", "{0474B7D9-B8AC-4CB5-AF58-4BDB5A1AABA5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.Connectors.Brightspace", "..\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace.csproj", "{0193E554-213E-4858-80E3-A4ED684FA992}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.TeamsLTI.Data", "UvA.TeamsLTI.Data\UvA.TeamsLTI.Data.csproj", "{ADFE3A43-584E-4694-BAE1-FFC944F770C1}"
@@ -14,6 +12,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.TeamsLTI.TestTool", "UvA.TeamsLTI.TestTool\UvA.TeamsLTI.TestTool.csproj", "{3E41341D-3280-4CD8-9ECE-B5900B6031DA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.Connectors.Teams", "..\UvA.Connectors.Teams\UvA.Connectors.Teams\UvA.Connectors.Teams.csproj", "{423A9587-8161-486A-B34B-A6F67C90AC9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UvA.LTI", "UvA.LTI\UvA.LTI.csproj", "{12F98F90-755C-4BF6-8C63-79EB3147FA53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +25,6 @@ Global
 		{4230449A-655E-43E5-96F9-FDF93911AFA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4230449A-655E-43E5-96F9-FDF93911AFA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4230449A-655E-43E5-96F9-FDF93911AFA8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0474B7D9-B8AC-4CB5-AF58-4BDB5A1AABA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0474B7D9-B8AC-4CB5-AF58-4BDB5A1AABA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0474B7D9-B8AC-4CB5-AF58-4BDB5A1AABA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0474B7D9-B8AC-4CB5-AF58-4BDB5A1AABA5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0193E554-213E-4858-80E3-A4ED684FA992}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0193E554-213E-4858-80E3-A4ED684FA992}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0193E554-213E-4858-80E3-A4ED684FA992}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,6 +41,10 @@ Global
 		{423A9587-8161-486A-B34B-A6F67C90AC9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{423A9587-8161-486A-B34B-A6F67C90AC9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{423A9587-8161-486A-B34B-A6F67C90AC9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12F98F90-755C-4BF6-8C63-79EB3147FA53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12F98F90-755C-4BF6-8C63-79EB3147FA53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12F98F90-755C-4BF6-8C63-79EB3147FA53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12F98F90-755C-4BF6-8C63-79EB3147FA53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
