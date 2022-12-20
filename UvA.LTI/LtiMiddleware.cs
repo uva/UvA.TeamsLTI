@@ -100,7 +100,10 @@ public class LtiMiddleware
         }
 
         if (context.Request.Form["client_id"][0] != _options.ClientId)
+        {
+            _logger.LogInformation($"Skipping request for {context.Request.Form["client_id"]} in {_options.ClientId}");
             return false;
+        }
 
         var nonce = Guid.NewGuid().ToString();
         

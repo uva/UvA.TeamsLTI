@@ -35,7 +35,7 @@ export default class Main extends Vue {
     this.canBecomeOwner = role == "Manager";
 
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    axios.get(process.env.VUE_APP_ENDPOINT + '/CourseInfo').then(resp => this.course = resp.data);
+    axios.get('/CourseInfo').then(resp => this.course = resp.data);
   }
 
   deleteSelected(): void {
@@ -49,7 +49,7 @@ export default class Main extends Vue {
 
   sync(): void {
     this.isSyncing = true;
-    axios.post(process.env.VUE_APP_ENDPOINT + '/CourseInfo/Sync').then(s => this.isSyncing = false);
+    axios.post('/CourseInfo/Sync').then(s => this.isSyncing = false);
   }
 }
 </script>

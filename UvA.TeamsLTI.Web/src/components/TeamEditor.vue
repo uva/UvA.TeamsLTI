@@ -127,7 +127,7 @@ export default class TeamEditor extends Vue {
       this.course.teams.push(this.team);
       this.team.url = 'test';
     }
-    axios.post(process.env.VUE_APP_ENDPOINT + '/CourseInfo', this.team).then(res => {
+    axios.post('/CourseInfo', this.team).then(res => {
       this.isSaving = false;
       this.team.id = res.data;
       this.$emit('save');
@@ -137,7 +137,7 @@ export default class TeamEditor extends Vue {
   deleteTeam(): void {
     this.isDeleting = false;
     this.isSaving = true;
-    axios.delete(process.env.VUE_APP_ENDPOINT + '/CourseInfo/' + this.team.id).then(res => {
+    axios.delete('/CourseInfo/' + this.team.id).then(res => {
       this.isSaving = false;
       this.$emit('delete');
     })
@@ -146,7 +146,7 @@ export default class TeamEditor extends Vue {
   becomeOwner(): void {
     this.isOwnerDialog = false;
     this.isSaving = true;
-    axios.post(process.env.VUE_APP_ENDPOINT + '/CourseInfo/BecomeOwner/' + this.team.id).then(res => {
+    axios.post('/CourseInfo/BecomeOwner/' + this.team.id).then(res => {
       this.isSaving = false;
     })
   }
