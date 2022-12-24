@@ -48,7 +48,8 @@ export default class TeamList extends Vue {
           allowPrivateChannels: true,
           addAllLecturers: true,
           createSectionChannels: false,
-          groupSetIds: []
+          groupSetIds: [],
+          isMember: false
       }
       this.$emit('edit', team);
   }

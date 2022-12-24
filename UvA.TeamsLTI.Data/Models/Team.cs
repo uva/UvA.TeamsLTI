@@ -29,6 +29,9 @@ namespace UvA.TeamsLTI.Data.Models
         public int[] GroupSetIds { get; set; }
         public Event DeleteEvent { get; set; }
         public Event CreateEvent { get; set; }
+        
+        [BsonIgnore]
+        public bool IsMember { get; set; }
 
         [JsonIgnore]
         public Dictionary<string, string> Users { get; set; } = new Dictionary<string, string>();

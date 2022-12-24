@@ -43,7 +43,7 @@
       Uncheck this box if you want to be added as the only lecturer to the team.
     </Tooltip>
 
-    <div class="link-container" v-if="team.url && canBecomeOwner">
+    <div class="link-container" v-if="team.url && canBecomeOwner && team.isMember">
       <a @click="isOwnerDialog = true" href="#" style="display: inline-block; margin-right: 3px">Become team owner</a>
       <Tooltip>
         Use this option to manage the team and private channels for sections or groups. You can add and remove members and delete channels.

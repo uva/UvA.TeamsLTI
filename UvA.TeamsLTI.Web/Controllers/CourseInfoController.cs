@@ -40,11 +40,11 @@ namespace UvA.TeamsLTI.Web.Controllers
             if (current != null)
                 info = await Data.UpdateCourseInfo(info);
             info.Teams = info.Teams.Where(t => t.DeleteEvent == null).OrderBy(t => t.Name).ToArray();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            foreach (var team in info.Teams)
+                team.IsMember = team.Users.ContainsKey(userId);
             if (!User.IsInRole(LoginController.Teacher) && !User.IsInRole(LoginController.Manager))
-            {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                info.Teams = info.Teams.Where(t => t.Users.ContainsKey(userId)).ToArray();
-            }
+                info.Teams = info.Teams.Where(t => t.IsMember).ToArray();
             return info;
         }
 

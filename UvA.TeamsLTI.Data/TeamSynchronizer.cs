@@ -38,8 +38,7 @@ namespace UvA.TeamsLTI.Data
         IConfigurationSection TeamsConfig;
         TeamsConnector _Connector;
 
-        TeamsConnector Connector
-            => _Connector ?? (_Connector = new TeamsConnector(Logger, TeamsConfig));
+        TeamsConnector Connector => _Connector ??= new TeamsConnector(Logger, TeamsConfig);
 
         string OwnerId, NicknamePrefix;
 
