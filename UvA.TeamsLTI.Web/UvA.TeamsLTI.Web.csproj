@@ -8,11 +8,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.1" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="6.25.1" />
+    <PackageReference Include="UvA.LTI" Version="0.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace\UvA.Connectors.Brightspace.csproj" />
-    <ProjectReference Include="..\UvA.LTI\UvA.LTI.csproj" />
     <ProjectReference Include="..\UvA.TeamsLTI.Data\UvA.TeamsLTI.Data.csproj" />
   </ItemGroup>
 

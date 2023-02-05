@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.TeamsLTI.TestTool", "Uv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UvA.Connectors.Teams", "..\UvA.Connectors.Teams\UvA.Connectors.Teams\UvA.Connectors.Teams.csproj", "{423A9587-8161-486A-B34B-A6F67C90AC9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UvA.LTI", "UvA.LTI\UvA.LTI.csproj", "{12F98F90-755C-4BF6-8C63-79EB3147FA53}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,10 +39,6 @@ Global
 		{423A9587-8161-486A-B34B-A6F67C90AC9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{423A9587-8161-486A-B34B-A6F67C90AC9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{423A9587-8161-486A-B34B-A6F67C90AC9F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{12F98F90-755C-4BF6-8C63-79EB3147FA53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{12F98F90-755C-4BF6-8C63-79EB3147FA53}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{12F98F90-755C-4BF6-8C63-79EB3147FA53}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{12F98F90-755C-4BF6-8C63-79EB3147FA53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
