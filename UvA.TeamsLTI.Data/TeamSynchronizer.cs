@@ -80,7 +80,10 @@ namespace UvA.TeamsLTI.Data
             if (team.Contexts[0].Type == ContextType.Course)
                 team.Contexts[0].Id = courseId;
             if (!batch)
-                await UpdateTeam();
+            {
+                if (await UpdateTeam() == null)
+                    return;
+            }
             await CheckChannels();
             if (await UpdateUsers() | await UpdateChannels())
                 await Task.Delay(TimeSpan.FromSeconds(30)); // need to wait before adding users to new channels
@@ -169,7 +172,15 @@ namespace UvA.TeamsLTI.Data
             }
             else
             {
-                res = await Connector.GetTeam(Team.GroupId);
+                try
+                {
+                    res = await Connector.GetTeam(Team.GroupId);
+                }
+                catch (Graph.ServiceException ex)
+                {
+                    Logger.LogError(ex, $"Failed to get team {Team.GroupId} in course {CourseId}");
+                    return null;
+                }
                 if (res.DisplayName != Team.Name)
                     await Connector.UpdateGroupName(Team.GroupId, Team.Name);
                 if (res.MemberSettings.AllowCreatePrivateChannels != Team.AllowPrivateChannels
