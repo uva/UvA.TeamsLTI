@@ -81,6 +81,8 @@ namespace UvA.TeamsLTI.Web
                 var configs = sp.GetRequiredService<IConfiguration>().GetSection("Environments").GetChildren().Where(c => c["Authority"] == aut);
                 if (configs.Count() > 1)
                     configs = configs.Where(c => c["ClientId"] == clientId);
+                if (!configs.Any())
+                    throw new Exception($"Cannot find {aut}/{clientId}");
                 var config = configs.Single();
                 return aut.Contains("canvas") ? new CanvasService(config) : new BrightspaceService(config);
             });
@@ -144,10 +146,11 @@ namespace UvA.TeamsLTI.Web
 
             foreach (var config in Config.GetSection("Environments").GetChildren())
             {
+                var clientId = config["ClientId"];
                 app.UseLti(new LtiOptions
                 {
                     AuthenticateUrl = config["Endpoint"],
-                    ClientId = config["ClientId"],
+                    ClientId = clientId,
                     InitiationEndpoint = "oidc",
                     LoginEndpoint = "signin-oidc",
                     SigningKey = Config["Jwt:Key"],
@@ -164,7 +167,8 @@ namespace UvA.TeamsLTI.Web
                         ["environment"] = config["Host"],
                         [ClaimTypes.Email] = p.Email,
                         [ClaimTypes.NameIdentifier] = p.NameIdentifier.Split("_").Last(),
-                        ["authority"] = config["Authority"]
+                        ["authority"] = config["Authority"],
+                        ["clientId"] = clientId
                     }
                 });
             }
