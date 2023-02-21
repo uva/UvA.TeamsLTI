@@ -93,7 +93,8 @@ namespace UvA.TeamsLTI.Services
             {
                 Username = u.LoginID,
                 Email = u.Email,
-                Id = u.ID.Value
+                Id = u.ID.Value,
+                IsTeacher = true
             });
         }
     }
