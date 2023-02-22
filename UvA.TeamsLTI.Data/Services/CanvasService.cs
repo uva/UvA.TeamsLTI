@@ -89,12 +89,14 @@ namespace UvA.TeamsLTI.Services
             {
                 // skip, group or section doesn't exist anymore
             }
-            return users.Concat(crs.GetUsersByType(Cv.EnrollmentType.Teacher)).Select(u => new UserInfo
+
+            var teachers = crs.GetUsersByType(Cv.EnrollmentType.Teacher);
+            return users.Concat(teachers).Select(u => new UserInfo
             {
                 Username = u.LoginID,
                 Email = u.Email,
                 Id = u.ID.Value,
-                IsTeacher = true
+                IsTeacher = teachers.Contains(u)
             });
         }
     }
