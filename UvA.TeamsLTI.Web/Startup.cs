@@ -166,7 +166,8 @@ namespace UvA.TeamsLTI.Web
                                 ? LoginController.Teacher : LoginController.Student,
                         ["environment"] = config["Host"],
                         [ClaimTypes.Email] = p.Email,
-                        [ClaimTypes.NameIdentifier] = p.NameIdentifier.Split("_").Last(),
+                        [ClaimTypes.NameIdentifier] = p.CustomClaims?.TryGetProperty("userid", out var el) == true 
+                            ? int.Parse(el.ToString()) : p.NameIdentifier.Split("_").Last(),
                         ["authority"] = config["Authority"],
                         ["clientId"] = clientId
                     }
