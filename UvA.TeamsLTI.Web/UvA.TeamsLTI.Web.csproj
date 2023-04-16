@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.1" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="6.25.1" />
-    <PackageReference Include="UvA.LTI" Version="0.1.0" />
+    <PackageReference Include="UvA.LTI" Version="0.2.0" />
   </ItemGroup>
 
   <ItemGroup>

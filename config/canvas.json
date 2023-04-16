@@ -21,7 +21,8 @@
     "public_jwk": {},
     "description": "Teams LTI Connector",
     "custom_fields": {
-        "courseId": "$Canvas.course.id"
+        "courseId": "$Canvas.course.id",
+        "userId": "$Canvas.user.id"
     },
     "public_jwk_url": "https://teamslti.azurewebsites.net/JWK",
     "target_link_uri": "https://teamslti.azurewebsites.net/Login",
