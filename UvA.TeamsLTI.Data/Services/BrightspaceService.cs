@@ -11,16 +11,28 @@ namespace UvA.TeamsLTI.Services
 {
     public class BrightspaceService : ICourseService
     {
-        BrightspaceConnector Connector;
-        string Host;
+        private readonly BrightspaceConnector _connector;
+        private readonly string _host;
 
+        private readonly int[] _roleIds;
+        private readonly int[] _coordinatorIds;
+        private readonly int _studentId;
+        
         public BrightspaceService(IConfiguration config)
         {
-            Connector = new BrightspaceConnector(Host = config["Host"], config["AppId"], config["AppKey"], config["UserId"], config["UserKey"]);
+            _connector = new BrightspaceConnector(_host = config["Host"], config["AppId"], config["AppKey"], config["UserId"], config["UserKey"]);
+            _roleIds = config["RoleIds"]?.Split(',').Select(int.Parse).ToArray() ?? new[]
+            {
+                109, // designing lecturer
+                110, // student
+                125  // lecturer
+            };
+            _studentId = int.TryParse(config["StudentId"], out var x) ? x : 110;
+            _coordinatorIds = config["CoordinatorIds"]?.Split(',').Select(int.Parse).ToArray() ?? new[] {109};
         }
 
-        Dictionary<int, Bsp.Course> Courses = new Dictionary<int, Bsp.Course>();
-        Bsp.Course GetCourse(int id) => Courses.GetValueOrDefault(id) ?? (Courses[id] = new Bsp.Course { Identifier = id, Connector = Connector });
+        private readonly Dictionary<int, Bsp.Course> _courses = new();
+        private Bsp.Course GetCourse(int id) => _courses.GetValueOrDefault(id) ?? (_courses[id] = new Bsp.Course { Identifier = id, Connector = _connector });
 
         public async Task<CourseInfo> GetCourseInfo(int courseId)
         {
@@ -39,34 +51,25 @@ namespace UvA.TeamsLTI.Services
                     Id = c.GroupCategoryId,
                     GroupCount = c.GroupIds.Length
                 }).ToArray(),
-                CourseUrl = $"{Host}/d2l/home/{courseId}"
+                CourseUrl = $"{_host}/d2l/home/{courseId}"
             };
         }
 
         public async Task<IEnumerable<GroupInfo>> GetGroups(int courseId, int groupSetId)
             => (await (await GetCourse(courseId).GetGroupCategories()).First(c => c.GroupCategoryId == groupSetId).GetGroups())
                 .Select(g => new GroupInfo { Id = g.GroupId, Name = g.Name });
-
-        static readonly int[] RoleIds = new[] 
-        {
-            109, // designing lecturer 
-            110, // student
-            124, // lecturer plus
-            125, // lecturer
-            126, // supporting lecturer
-        };
-
+        
         public async Task<IEnumerable<UserInfo>> GetUsers(int courseId, Context context)
         {
             var crs = GetCourse(courseId);
-            await Task.WhenAll(RoleIds.Select(r => crs.GetEnrollments(r)));
+            await Task.WhenAll(_roleIds.Select(r => crs.GetEnrollments(r)));
             var users = crs.Enrollments.Select(e => new UserInfo
                 {
                     Username = e.User.OrgDefinedId,
                     Email = e.User.EmailAddress,
                     Id = int.Parse(e.User.Identifier),
-                    IsTeacher = e.Role.Id != 110,
-                    IsCoordinator = e.Role.Id == 109
+                    IsTeacher = e.Role.Id != _studentId,
+                    IsCoordinator = _coordinatorIds.Contains(e.Role.Id)
                 }).ToArray();
             switch (context.Type)
             {
