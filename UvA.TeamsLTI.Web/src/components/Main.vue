@@ -49,7 +49,10 @@ export default class Main extends Vue {
 
   sync(): void {
     this.isSyncing = true;
-    axios.post('/CourseInfo/Sync').then(s => this.isSyncing = false);
+    axios.post('/CourseInfo/Sync')
+        .then(s => this.isSyncing = false)
+        .then(() => axios.get('/CourseInfo'))
+        .then(resp => this.course = resp.data);
   }
 }
 </script>
