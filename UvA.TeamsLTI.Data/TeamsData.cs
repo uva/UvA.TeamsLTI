@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
+using MongoDB.Driver.Linq;
 using UvA.TeamsLTI.Data.Models;
 
 namespace UvA.TeamsLTI.Data
@@ -69,7 +70,7 @@ namespace UvA.TeamsLTI.Data
                 }
 
                 await Courses.UpdateOneAsync(TeamFilter(env, id, existing.Id),
-                    Builders<CourseInfo>.Update.Set(c => c.Teams[-1], existing));
+                    Builders<CourseInfo>.Update.Set(c => c.Teams.FirstMatchingElement(), existing));
             }
         }
 
@@ -79,10 +80,10 @@ namespace UvA.TeamsLTI.Data
 
         public Task UpdateChannels(string env, int id, Team team)
             => Courses.UpdateOneAsync(TeamFilter(env, id, team.Id),
-                    Builders<CourseInfo>.Update.Set(c => c.Teams[-1].Channels, team.Channels));
+                    Builders<CourseInfo>.Update.Set(c => c.Teams.FirstMatchingElement().Channels, team.Channels));
 
         public Task UpdateUsers(string env, int id, Team team)
             => Courses.UpdateOneAsync(TeamFilter(env, id, team.Id),
-                    Builders<CourseInfo>.Update.Set(c => c.Teams[-1].Users, team.Users));
+                    Builders<CourseInfo>.Update.Set(c => c.Teams.FirstMatchingElement().Users, team.Users));
     }
 }
