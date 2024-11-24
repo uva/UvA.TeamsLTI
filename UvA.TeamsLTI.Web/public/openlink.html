@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Centered Link</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #351fb7;
+            font-family: "Open Sans", Arial, sans-serif;
+        }
+        a {
+            font-size: 2rem;
+            text-decoration: none;
+            padding-bottom: 3px;
+            border-bottom: 2px solid white;
+            color: white;
+        }
+        a:hover {
+            color: #f35279;
+            border-bottom: 2px solid #f35279;
+        }
+    </style>
+</head>
+<body>
+    <a id="link" href="#" target="_blank">Open Brightspace course</a>
+</body>
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const target = urlParams.get('target');
+  document.getElementById("link").href = `https://dlo.mijnhva.nl/d2l/home/${target}`;
+</script>
+</html>
