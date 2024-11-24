@@ -233,10 +233,14 @@ namespace UvA.TeamsLTI.Data
 
         async Task<bool> UpdateUsers()
         {
-            var users = (await Task.WhenAll(Team.Contexts.Select(c => CourseService.GetUsers(CourseId, c)))).SelectMany(a => a)
+            var allUsers = (await Task.WhenAll(Team.Contexts.Select(c => CourseService.GetUsers(CourseId, c))))
+                .SelectMany(a => a)
+                .ToArray();
+            var users = allUsers
                 .Where(u => !u.IsTeacher || Team.AddAllLecturers || string.Equals(u.Email, Team.CreateEvent?.User, StringComparison.CurrentCultureIgnoreCase))
                 .Where(u => u.Email != null).Distinct().ToArray();
             var addedUsers = users.Where(u => !Team.Users.ContainsKey(u.Id.ToString())).ToArray();
+            Logger.LogInformation($"Syncing users for {Team.Name} ({Team.GroupId}): {users.Length} users (all: {allUsers.Length}), adding {addedUsers.Length}");
             foreach (var user in addedUsers)
             {
                 var gu = await Connector.FindUser(user.Email);
