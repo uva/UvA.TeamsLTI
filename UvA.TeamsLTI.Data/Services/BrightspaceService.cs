@@ -51,7 +51,7 @@ namespace UvA.TeamsLTI.Services
                     Id = c.GroupCategoryId,
                     GroupCount = c.GroupIds.Length
                 }).ToArray(),
-                CourseUrl = $"{_host}/d2l/home/{courseId}"
+                CourseUrl = $"https://teamslti.azurewebsites.net/openlink.html?target={_host}/d2l/home/{courseId}"
             };
         }
 
