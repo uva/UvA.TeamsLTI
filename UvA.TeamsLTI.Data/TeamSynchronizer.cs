@@ -66,7 +66,7 @@ namespace UvA.TeamsLTI.Data
                     {
                         await Connector.DeleteGroup(team.GroupId);
                     }
-                    catch (Graph.ServiceException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    catch (Graph.ServiceException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
                     {
                         // already gone
                     }

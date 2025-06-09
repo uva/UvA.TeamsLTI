@@ -27,15 +27,8 @@ using UvA.TeamsLTI.Web.Services;
 
 namespace UvA.TeamsLTI.Web
 {
-    public class Startup
+    public class Startup(IConfiguration config)
     {
-        IConfiguration Config;
-
-        public Startup(IConfiguration config)
-        {
-            Config = config;
-        }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -61,7 +54,7 @@ namespace UvA.TeamsLTI.Web
                 })
                 .AddJwtBearer(opt =>
                 {
-                    var key = Encoding.UTF8.GetBytes(Config["Jwt:Key"]);
+                    var key = Encoding.UTF8.GetBytes(config["Jwt:Key"]);
 
                     opt.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -92,6 +85,7 @@ namespace UvA.TeamsLTI.Web
             services.AddTransient<TeamSynchronizerResolver>();
             services.AddTransient<SyncEngine>();
             services.AddHostedService<SyncService>();
+            services.AddHostedService<CleanupService>();
 
             services.AddAuthorization();
             services.AddControllers();
@@ -144,17 +138,17 @@ namespace UvA.TeamsLTI.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
-            foreach (var config in Config.GetSection("Environments").GetChildren())
+            foreach (var section in config.GetSection("Environments").GetChildren())
             {
-                var clientId = config["ClientId"];
+                var clientId = section["ClientId"];
                 app.UseLti(new LtiOptions
                 {
-                    AuthenticateUrl = config["Endpoint"],
+                    AuthenticateUrl = section["Endpoint"],
                     ClientId = clientId,
                     InitiationEndpoint = "oidc",
                     LoginEndpoint = "signin-oidc",
-                    SigningKey = Config["Jwt:Key"],
-                    JwksUrl = config["JwksUrl"],
+                    SigningKey = config["Jwt:Key"],
+                    JwksUrl = section["JwksUrl"],
                     RedirectUrl = "",
                     ClaimsMapping = p => new Dictionary<string, object>
                     {
@@ -164,11 +158,11 @@ namespace UvA.TeamsLTI.Web
                         [ClaimTypes.Role] = p.Roles.Any(e => e.Contains("http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor"))
                             ? LoginController.Manager : p.Roles.Any(e => e.Contains("Instructor")) 
                                 ? LoginController.Teacher : LoginController.Student,
-                        ["environment"] = config["Host"],
+                        ["environment"] = section["Host"],
                         [ClaimTypes.Email] = p.Email,
                         [ClaimTypes.NameIdentifier] = p.CustomClaims?.TryGetProperty("userid", out var el) == true 
                             ? int.Parse(el.ToString()) : p.NameIdentifier.Split("_").Last(),
-                        ["authority"] = config["Authority"],
+                        ["authority"] = section["Authority"],
                         ["clientId"] = clientId
                     }
                 });

@@ -7,28 +7,15 @@ using UvA.TeamsLTI.Data;
 
 namespace UvA.TeamsLTI.Services
 {
-    public class SyncEngine
+    public class SyncEngine(TeamsData data, TeamSynchronizerResolver resolver, ILogger<SyncEngine> logger)
     {
-        TeamSynchronizerResolver Resolver;
-        TeamsData Data;
-        IConfiguration Config;
-        ILogger Logger;
-
-        public SyncEngine(IConfiguration config, TeamsData data, TeamSynchronizerResolver resolver, ILogger<SyncEngine> logger)
-        {
-            Data = data;
-            Resolver = resolver;
-            Config = config;
-            Logger = logger;
-        }
-
         public async Task SyncAll()
         {
-            Logger.LogInformation("Running full sync");
-            foreach (var env in Config.GetSection("Environments").GetChildren().Select(e => e["Host"]).ToArray())
+            logger.LogInformation("Running full sync");
+            foreach (var env in resolver.GetEnvironments())
             {
-                var sync = Resolver.Get(env);
-                foreach (var course in await Data.GetRelevantCourses(env))
+                var sync = resolver.Get(env);
+                foreach (var course in await data.GetRelevantCourses(env))
                 {
                     foreach (var team in course.Teams.Where(t => t.GroupId != null))
                     {
@@ -38,7 +25,7 @@ namespace UvA.TeamsLTI.Services
                         }
                         catch (Exception ex)
                         {
-                            Logger.LogError(ex, $"Failed to sync team {team.Name} ({team.GroupId}) in {course.Environment}:{course.CourseId}");
+                            logger.LogError(ex, $"Failed to sync team {team.Name} ({team.GroupId}) in {course.Environment}:{course.CourseId}");
                         }
                     }
                 }
@@ -46,24 +33,17 @@ namespace UvA.TeamsLTI.Services
         }
     }
 
-    public class TeamSynchronizerResolver
+    public class TeamSynchronizerResolver(IConfiguration config, TeamsData data, ILogger<TeamSynchronizer> log)
     {
-        ILogger<TeamSynchronizer> Logger;
-        TeamsData Data;
-        IConfiguration Config;
-
-        public TeamSynchronizerResolver(IConfiguration config, TeamsData data, ILogger<TeamSynchronizer> log)
+        public string[] GetEnvironments()
+            => config.GetSection("Environments").GetChildren().Select(e => e["Host"]).ToArray();
+        
+        public ICourseService GetCourseService(string env)
         {
-            Config = config;
-            Data = data;
-            Logger = log;
+            var section = config.GetSection("Environments").GetChildren().First(c => c["Host"] == env);
+            return env.Contains("canvas") || env.Contains("instructure") ? new CanvasService(section) : new BrightspaceService(section);
         }
-
-        public TeamSynchronizer Get(string env)
-        {
-            var config = Config.GetSection("Environments").GetChildren().First(c => c["Host"] == env);
-            ICourseService courseService = env.Contains("canvas") ? new CanvasService(config) : new BrightspaceService(config);
-            return new TeamSynchronizer(Config, Data, courseService, Logger);
-        }
+        
+        public TeamSynchronizer Get(string env) => new(config, data, GetCourseService(env), log);
     }
 }

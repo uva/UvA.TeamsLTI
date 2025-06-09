@@ -29,6 +29,9 @@ namespace UvA.TeamsLTI.Data
         public async Task<CourseInfo> GetCourse(string env, int id)
             => await (await Courses.FindAsync(f => f.Environment == env && f.CourseId == id)).FirstOrDefaultAsync();
 
+        public async Task<IEnumerable<CourseInfo>> GetCourses(string env)
+            => (await Courses.FindAsync(c => c.Environment == env && c.Teams.Any(t => t.GroupId != null))).ToEnumerable(); 
+        
         public async Task<CourseInfo> UpdateCourseInfo(CourseInfo info)
         {
             var existing = await GetCourse(info.Environment, info.CourseId);

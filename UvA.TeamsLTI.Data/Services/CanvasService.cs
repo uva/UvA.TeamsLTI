@@ -2,22 +2,28 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Cv = UvA.DataNose.Connectors.Canvas;
 using UvA.TeamsLTI.Data.Models;
-using UvA.TeamsLTI.Services;
 using System.Net;
 
 namespace UvA.TeamsLTI.Services
 {
-    public class CanvasService : ICourseService
+    public class CanvasService(IConfiguration config) : ICourseService
     {
-        Cv.CanvasApiConnector Connector;
+        Cv.CanvasApiConnector Connector = new(config["Host"], config["Token"]);
 
-        public CanvasService(IConfiguration config)
+        public Task<bool> CourseExists(int courseId)
         {
-            Connector = new Cv.CanvasApiConnector(config["Host"], config["Token"]);
+            try
+            {
+                var course = Connector.FindCourseById(courseId);
+                return Task.FromResult(course != null);
+            }
+            catch (WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.NotFound)
+            {
+                return Task.FromResult(false);
+            }
         }
 
         public async Task<CourseInfo> GetCourseInfo(int courseId)
@@ -29,12 +35,12 @@ namespace UvA.TeamsLTI.Services
                 Sections = crs.Sections.Select(s => new Section
                 {
                     Name = s.Name,
-                    Id = s.ID.Value
+                    Id = s.ID!.Value
                 }).ToArray(),
                 GroupSets = crs.GroupCategories.Select(c => new GroupSet
                 {
                     Name = c.Name,
-                    Id = c.ID.Value,
+                    Id = c.ID!.Value,
                     GroupCount = c.Groups.Count
                 }).ToArray()
             };

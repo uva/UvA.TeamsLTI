@@ -6,6 +6,8 @@ using UvA.Connectors.Brightspace;
 using Bsp = UvA.Connectors.Brightspace.Models;
 using UvA.TeamsLTI.Data.Models;
 using System;
+using System.Net;
+using System.Net.Http;
 
 namespace UvA.TeamsLTI.Services
 {
@@ -33,6 +35,19 @@ namespace UvA.TeamsLTI.Services
 
         private readonly Dictionary<int, Bsp.Course> _courses = new();
         private Bsp.Course GetCourse(int id) => _courses.GetValueOrDefault(id) ?? (_courses[id] = new Bsp.Course { Identifier = id, Connector = _connector });
+
+        public async Task<bool> CourseExists(int courseId)
+        {
+            try
+            {
+                var course = await _connector.GetCourseOffering(courseId);
+                return course != null;
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                return false;
+            }
+        }
 
         public async Task<CourseInfo> GetCourseInfo(int courseId)
         {
