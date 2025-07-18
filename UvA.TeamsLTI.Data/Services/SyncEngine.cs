@@ -43,6 +43,13 @@ namespace UvA.TeamsLTI.Services
             var section = config.GetSection("Environments").GetChildren().First(c => c["Host"] == env);
             return env.Contains("canvas") || env.Contains("instructure") ? new CanvasService(section) : new BrightspaceService(section);
         }
+
+        public string GetReportUrl(string env)
+        {
+            var section = config.GetSection("Environments").GetChildren().First(c => c["Host"] == env);
+            var target = section["Teams"];
+            return config.GetSection("Teams").GetSection(target)["DeletionReportUrl"];
+        }
         
         public TeamSynchronizer Get(string env) => new(config, data, GetCourseService(env), log);
     }
